@@ -20,6 +20,7 @@ public class Server {
     public static void main(String[] args) throws IOException {
 	   ServerSocket ss = new ServerSocket(4567);
 	   int client_id = 0;
+
 	   while (true) {
 	      Socket cs = ss.accept();
 	     Thread t1 = new Thread(new ReadMessage(cs,client_id));
