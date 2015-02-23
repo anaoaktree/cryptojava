@@ -48,12 +48,10 @@ class ReadMessage implements Runnable {
 	    BufferedReader in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
 	    String msg;
             while ((msg = in.readLine()) != null){
-                System.out.println("["+id+"]: "+msg);
-                        
+                System.out.println("["+id+"]: "+msg);     
                 /*
             TRATAR MENSAGEM
-            */
-            
+            */ 
             }
           System.out.println("["+id+"]: "+"Client disconnected");
             
