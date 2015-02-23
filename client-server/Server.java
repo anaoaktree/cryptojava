@@ -16,17 +16,20 @@ public class Server {
      * @param args the command line arguments
      * @throws java.io.IOException
      */
+
     public static void main(String[] args) throws IOException {
-	ServerSocket ss = new ServerSocket(4567);
-	int client_id = 0;
-	while (true) {
-	    Socket cs = ss.accept();
-	    Thread t1 = new Thread(new ReadMessage(cs,client_id));
-	    t1.start();
-	    client_id++;
-	}
+	   ServerSocket ss = new ServerSocket(4567);
+	   int client_id = 0;
+	   while (true) {
+	      Socket cs = ss.accept();
+	     Thread t1 = new Thread(new ReadMessage(cs,client_id));
+	     t1.start();
+	     client_id++;
+	   }
     }
 }
+
+
 
 class ReadMessage implements Runnable {
     
@@ -35,8 +38,8 @@ class ReadMessage implements Runnable {
 
     
     public ReadMessage(Socket client,int id) {
-	this.client = client;
-	this.id=id;
+	   this.client = client;
+	   this.id=id;
     }
 
     public void run() {
