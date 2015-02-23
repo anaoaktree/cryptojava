@@ -47,13 +47,13 @@ public class Arc4{
 	public static void main(String[] args) {
 		try{
 			System.out.println("initiating key...");
-		init(Files.readAllBytes(Paths.get("./key")));
+		init(Files.readAllBytes(Paths.get("./chave")));
 			System.out.println("arc4 working...");
 
-		byte[] decifer=arc4(Files.readAllBytes(Paths.get("./input")));
-        Files.write(Paths.get("./arc4out"), decifer);
-		byte[] arc4back =arc4(Files.readAllBytes(Paths.get("./arc4out")));
-        Files.write(Paths.get("./arc4back"), arc4back);
+		byte[] decifer=arc4(Files.readAllBytes(Paths.get("./limpo_arc4")));
+        Files.write(Paths.get("./criptograma_arc4"), decifer);
+		byte[] arc4back =arc4(Files.readAllBytes(Paths.get("./criptograma_arc4")));
+        Files.write(Paths.get("./decifrado_arc4"), arc4back);
 
 
 
