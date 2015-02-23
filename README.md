@@ -19,9 +19,9 @@ Trabalhos práticos da UC de SSI
 - **Decifrar**: correr "./decifrar_rc4" utiliza os ficheiros "chave" e "criptograma" e decifra para o ficheiro "texto_decifrado";
 
 **Alternativa**:
-* java Rc4 -genkey <ficheiro_chave>
-* java Rc4 -enc <chave> <texto_limpo> <criptograma>
-* java Rc4 -dec <chave> <criptograma> <texto_decifrado>
+* java Rc4 -genkey ficheiro_chave
+* java Rc4 -enc ficheiro_chave ficheiro_texto_limpo ficheiro_criptograma
+* java Rc4 -dec ficheiro_chave ficheiro_criptograma ficheiro_texto_decifrado
 
 
 ### Implementação própria (Arc4.java)
