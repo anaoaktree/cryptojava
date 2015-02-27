@@ -10,6 +10,20 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Scanner;
 import java.io.*;
+import javax.crypto.CipherInputStream;
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.*;
+import java.nio.file.Files;
+import java.nio.file.*;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Client {
     public static void main(String args[])
@@ -20,42 +34,44 @@ public class Client {
         String str = "", str2;
         Scanner stdin = new Scanner(System.in);
         
-        try
-        {
+        //G2
+        String mode = "RC4";
+        //Cipher cipher = new Cipher();
+                
+        int test;
+        //END G2
+
+        try{
+
+            Cipher cipher = Cipher.getInstance(mode);
             s = new Socket("localhost", 4567);
-            
-            try
+            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            out = new PrintWriter(s.getOutputStream());
+            //G2
+            Path kp=Paths.get("../Rc4/chave");
+            byte[] keyfile= Files.readAllBytes(kp);
+            SecretKey key = new SecretKeySpec(keyfile,"RC4");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            OutputStream os = s.getOutputStream();
+            CipherOutputStream cos = new CipherOutputStream(os,cipher); 
+            //END G2
+
+            System.out.println("Connected to server");                
+            //while(!(str.equals("exit")))
+            while((test=System.in.read())!=-1)
             {
-                in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                out = new PrintWriter(s.getOutputStream());
-                
-                System.out.println("Connected to server");
-                
-                while(!(str.equals("exit")))
-                {
-                    str = stdin.nextLine();
-                    out.println(str);
-                    out.flush();
-                }
-                
-                try
-                {
-                    in.close();
-                    out.close();
-                    s.close();
-                    System.out.println("Disconnected from server");
-                }
-                catch(IOException e)
-                {
-                    System.out.println("*** Error while exiting ***");
-                }
+                cos.write((byte)test);
+                cos.flush();
+                //str = stdin.nextLine();
+                //out.println(str);
+                //out.flush();
             }
-            catch(IOException e)
-            {
-                System.out.println("*** Failed to make I/O with the server ***");
-            }
+            in.close();
+            out.close();
+            s.close();
+                       
         }
-        catch(IOException e)
+        catch(Exception e)
         {
             System.out.println("*** Failed to connect to server ***");
         }
