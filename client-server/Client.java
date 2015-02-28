@@ -31,27 +31,27 @@ import javax.crypto.spec.IvParameterSpec;
 public class Client {
     public static void main(String args[])
     {
-        Client c = new Client();
         SupportedCiphers supportedCiphers = new SupportedCiphers();
-        supportedCiphers.add("RC4", "RC4");
-        supportedCiphers.add("CBC","AES/CBC/NoPadding");
-        supportedCiphers.add("CFB8","AES/CFB8/NoPadding");
-        supportedCiphers.add("CFB","AES/CFB/NoPadding");
+        supportedCiphers.add("rc4", "RC4");
+        supportedCiphers.add("cbc","AES/CBC/NoPadding");
+        supportedCiphers.add("cfb8","AES/CFB8/NoPadding");
+        supportedCiphers.add("cfb","AES/CFB/NoPadding");
 
-        supportedCiphers.add("CBC_Pdd","AES/CBC/PKCS5Padding");
-        supportedCiphers.add("CFB8_Pdd","AES/CFB8/PKCS5Padding");
+        supportedCiphers.add("cbc_pdd","AES/CBC/PKCS5Padding");
+        supportedCiphers.add("cfb8_pdd","AES/CFB8/PKCS5Padding");
 
         Socket s;
         BufferedReader in;
         PrintWriter out;
         String mode = "";
-        if (args.length > 0)
+        if (args.length > 0){
             mode = supportedCiphers.getCipher(args[0]);
             if(mode.length() < 1){
                 System.out.println("Wrong cipher identifier!");
                 System.out.println(supportedCiphers.getSupportedCiphers());
                 mode = "RC4";
             }
+        }
         else{
             mode = "RC4";
         }
@@ -61,8 +61,8 @@ public class Client {
             s = new Socket("localhost", 4567);
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             out = new PrintWriter(s.getOutputStream());
-            
-            Cipher cipher = c.encrypt(mode);
+            Encrypt enc = new Encrypt();
+            Cipher cipher = enc.encrypt(mode);
             OutputStream os = s.getOutputStream();
             CipherOutputStream cos = new CipherOutputStream(os,cipher); 
             
@@ -88,9 +88,12 @@ public class Client {
             System.out.println("*** Failed to connect to server ***");
         }
     }
-
+}
+   
+class Encrypt{
     public Cipher encrypt(String mode){
         try{
+            System.out.println("enc "+mode);
             Cipher cipher = Cipher.getInstance(mode);
             //IV
             Path piv = Paths.get("iv");
@@ -103,7 +106,14 @@ public class Client {
             //KEY
             Path kp=Paths.get("../Rc4/chave");
             byte[] keyfile= Files.readAllBytes(kp);
-            SecretKey key = new SecretKeySpec(keyfile,mode);
+            SecretKey key;
+            if(mode.startsWith("AES")){
+                key = new SecretKeySpec(keyfile,"AES");
+                iv= Files.readAllBytes(Paths.get("./iv"));
+            }
+            else{
+                key = new SecretKeySpec(keyfile,"RC4");
+            }
             cipher.init(Cipher.ENCRYPT_MODE, key,new IvParameterSpec(iv));
             return cipher;
         }
@@ -111,7 +121,6 @@ public class Client {
         return null;
     }
 }
-   
 
 
 class SupportedCiphers{
