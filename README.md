@@ -1,7 +1,10 @@
 # Trabalhos Práticos
 Trabalhos práticos da UC de Segurança de Sistemas Informáticos (SSI)
+
 Perfil Sistemas Distribuídos e Criptografia (SDC)
+
 Mestrado em Engenharia Informática (MEI)
+
 Universidade do Minho (UM)
 
 **Por Ana Paula Carvalho e Fábio Fernandes**
