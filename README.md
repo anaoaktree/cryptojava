@@ -1,7 +1,10 @@
-# SSI1415
-Trabalhos práticos da UC de SSI 
+# Trabalhos Práticos
+Trabalhos práticos da UC de Segurança de Sistemas Informáticos (SSI)
+Perfil Sistemas Distribuídos e Criptografia (SDC)
+Mestrado em Engenharia Informática (MEI)
+Universidade do Minho (UM)
 
-#### Por Ana Paula Carvalho e Fábio Fernandes
+**Por Ana Paula Carvalho e Fábio Fernandes**
 
 ##client-server
 1. Correr o servidor com *./server* (pode ser preciso executar "chmod 777 server");
@@ -10,9 +13,7 @@ Trabalhos práticos da UC de SSI
 - O cliente abre uma interface de escrita. Tudo o que é escrito é impresso no servidor com o id do cliente.
 - O servidor fica à escuta de mensagens dos clientes, que imprime no ecrã.
 
-###Atualização Aula 2
-
-O cliente foi atualizado para enviar mensagens cifradas ao servidor, que as decifra. 
+O cliente foi atualizado para enviar mensagens (byte a byte) cifradas ao servidor, que as decifra. 
 ####Para escolher uma das várias cifras e modos:
 1. Correr normalmente o servidor (ver acima);
 -  **RC4**: Correr o cliente com *./client* ou *./client rc4*;
