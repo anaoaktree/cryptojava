@@ -1,16 +1,14 @@
 # Trabalhos Práticos
 Trabalhos práticos da UC de Segurança de Sistemas Informáticos (SSI)
 
-Perfil Sistemas Distribuídos e Criptografia (SDC)
-
-Mestrado em Engenharia Informática (MEI)
+Perfil Sistemas Distribuídos e Criptografia (SDC) - Mestrado em Eng. Informática (MEI)
 
 Universidade do Minho (UM)
 
 **Por Ana Paula Carvalho e Fábio Fernandes**
 
 ##client-server
-1. Correr o servidor com *./server* (pode ser preciso executar "chmod 777 server");
+1. Correr o servidor com *./server* (pode ser preciso executar *chmod 777 server*);
 2. Correr o cliente com *./client*;
 
 - O cliente abre uma interface de escrita. Tudo o que é escrito é impresso no servidor com o id do cliente.
