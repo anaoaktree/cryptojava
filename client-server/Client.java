@@ -108,13 +108,13 @@ class Encrypt{
             byte[] keyfile= Files.readAllBytes(kp);
             SecretKey key;
             if(mode.startsWith("AES")){
-                key = new SecretKeySpec(keyfile,"AES");
-                iv= Files.readAllBytes(Paths.get("./iv"));
+                key = new SecretKeySpec(keyfile,"AES");    
+                cipher.init(Cipher.ENCRYPT_MODE, key,new IvParameterSpec(iv));
             }
             else{
                 key = new SecretKeySpec(keyfile,"RC4");
+                cipher.init(Cipher.ENCRYPT_MODE, key);
             }
-            cipher.init(Cipher.ENCRYPT_MODE, key,new IvParameterSpec(iv));
             return cipher;
         }
         catch (Exception e) {System.out.println(e);}
