@@ -4,8 +4,8 @@ Trabalhos práticos da UC de SSI
 #### Por Ana Paula Carvalho e Fábio Fernandes
 
 ##client-server
-1. Correr o servidor com "./server" (pode ser preciso executar "chmod 777 server");
-2. Correr o cliente com "./client";
+1. Correr o servidor com **./server** (pode ser preciso executar "chmod 777 server");
+2. Correr o cliente com **./client**;
 
 - O cliente abre uma interface de escrita. Tudo o que é escrito é impresso no servidor com o id do cliente.
 - O servidor fica à escuta de mensagens dos clientes, que imprime no ecrã.
@@ -14,7 +14,17 @@ Trabalhos práticos da UC de SSI
 
 O cliente foi atualizado para enviar mensagens cifradas ao servidor, que as decifra. 
 ####Para escolher uma das várias cifras e modos:
-Neste momento está definido apenas suporte para RC4.A chave que usam é a que se encontra na pasta rc4.
+1. Correr normalmente o servidor (ver acima);
+-  **RC4**: Correr o cliente com **./client** ou **./client rc4**;
+-  **AES/CBC/NoPadding**: Correr o cliente com **./client** ou **./client cbc**;
+- **AES/CBC/PKCS5Padding**: Correr o cliente com **./client** ou **./client cbc_pdd**;
+-  **AES/CFB8/NoPadding**: Correr o cliente com **./client** ou **./client cfb8**;
+-  **AES/CFB8/PKCS5Padding**: Correr o cliente com **./client** ou **./client cbf8_pdd**;
+-  **AES/CFB/NoPadding**: Correr o cliente com **./client** ou **./client cfb**;
+
+
+
+
 
 
 
