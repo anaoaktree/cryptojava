@@ -15,12 +15,12 @@ Trabalhos práticos da UC de SSI
 O cliente foi atualizado para enviar mensagens cifradas ao servidor, que as decifra. 
 ####Para escolher uma das várias cifras e modos:
 1. Correr normalmente o servidor (ver acima);
--  **RC4**: Correr o cliente com **./client** ou **./client rc4**;
--  **AES/CBC/NoPadding**: Correr o cliente com **./client** ou **./client cbc**;
-- **AES/CBC/PKCS5Padding**: Correr o cliente com **./client** ou **./client cbc_pdd**;
--  **AES/CFB8/NoPadding**: Correr o cliente com **./client** ou **./client cfb8**;
--  **AES/CFB8/PKCS5Padding**: Correr o cliente com **./client** ou **./client cbf8_pdd**;
--  **AES/CFB/NoPadding**: Correr o cliente com **./client** ou **./client cfb**;
+-  **RC4**: Correr o cliente com *./client* ou *./client rc4*;
+-  **AES/CBC/NoPadding**: Correr o cliente com *./client* ou *./client cbc*;
+- **AES/CBC/PKCS5Padding**: Correr o cliente com **./client** ou *./client cbc_pdd*;
+-  **AES/CFB8/NoPadding**: Correr o cliente com *./client** ou *./client cfb8*;
+-  **AES/CFB8/PKCS5Padding**: Correr o cliente com *./client* ou *./client cbf8_pdd*;
+-  **AES/CFB/NoPadding**: Correr o cliente com *./client* ou *./client cfb*;
 
 
 
@@ -31,15 +31,15 @@ O cliente foi atualizado para enviar mensagens cifradas ao servidor, que as deci
 ##rc4
 
 ### Implementação JCA/JCE (Rc4.java)
-- **Pré-requisitos**: ter um ficheiro "texto_limpo" (sem extensões) na diretoria.
-- **Gerar chave**: escrever uma chave no ficheiro "chave" ou correr "./gerar_chave";
-- **Cifrar**: correr "./cifrar_rc4" utiliza os ficheiros "chave" e "texto_limpo" e cifra para o ficheiro "criptograma";
-- **Decifrar**: correr "./decifrar_rc4" utiliza os ficheiros "chave" e "criptograma" e decifra para o ficheiro "texto_decifrado";
+- **Pré-requisitos**: ter um ficheiro *texto_limpo* (sem extensões) na diretoria.
+- **Gerar chave**: escrever uma chave no ficheiro *chave* ou correr *./gerar_chave*;
+- **Cifrar**: correr *./cifrar_rc4* utiliza os ficheiros *chave* e *texto_limpo* e cifra para o ficheiro *criptograma*;
+- **Decifrar**: correr *./decifrar_rc4* utiliza os ficheiros *chave* e *criptograma* e decifra para o ficheiro *texto_decifrado*;
 
 **Alternativa**:
-* java Rc4 -genkey ficheiro_chave
-* java Rc4 -enc ficheiro_chave ficheiro_texto_limpo ficheiro_criptograma
-* java Rc4 -dec ficheiro_chave ficheiro_criptograma ficheiro_texto_decifrado
+- java Rc4 **-genkey** *ficheiro_chave*
+- java Rc4 **-enc** *ficheiro_chave* *ficheiro_texto_limpo* *ficheiro_criptograma*
+- java Rc4 **-dec** *ficheiro_chave* *ficheiro_criptograma* *ficheiro_texto_decifrado*
 
 
 ### Implementação própria (Arc4.java)
