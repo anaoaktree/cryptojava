@@ -96,7 +96,6 @@ class ReadMessage implements Runnable {
            } 
 		}
 		InputStream is = this.client.getInputStream();
-		cipherMode="AES/CBC/PKCS5Padding";
         System.out.println("["+id+"]: Client connected with cipher "+cipherMode);
         Cipher ciph=decrypt(cipherMode);
         CipherInputStream cis = new CipherInputStream(is,ciph);
