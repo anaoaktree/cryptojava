@@ -10,6 +10,14 @@ Trabalhos práticos da UC de SSI
 - O cliente abre uma interface de escrita. Tudo o que é escrito é impresso no servidor com o id do cliente.
 - O servidor fica à escuta de mensagens dos clientes, que imprime no ecrã.
 
+###Atualização Aula 2
+
+O cliente foi atualizado para enviar mensagens cifradas ao servidor, que as decifra. 
+####Para escolher uma das várias cifras e modos:
+Neste momento está definido apenas suporte para RC4.A chave que usam é a que se encontra na pasta rc4.
+
+
+
 ##rc4
 
 ### Implementação JCA/JCE (Rc4.java)
