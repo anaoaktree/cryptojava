@@ -56,13 +56,11 @@ class ReadMessage implements Runnable {
     public void run() {
     	Boolean firstTime=true;
     	String cipherMode="";
+
 	try {
 		if (firstTime){
 
-
-	
 	    BufferedReader in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
-
 	    String msg;
             while ((msg = in.readLine()) != null){
             	cipherMode=(String) msg;
@@ -70,25 +68,24 @@ class ReadMessage implements Runnable {
                 break;    
            } 
 		}
-		else{
+        System.out.println("["+id+"]: Client connected with cipher"+cipherMode);
 
-
+		
 		InputStream is = this.client.getInputStream();
         String mode="RC4";
 		Cipher e = Cipher.getInstance("RC4");
 		byte[] keyfile= Files.readAllBytes(Paths.get("../rc4/chave"));
 		SecretKey key = new SecretKeySpec(keyfile,"RC4");
 		e.init(Cipher.DECRYPT_MODE,key);
-        System.out.println("Using cipher "+cipherMode+"for client ["+id+"]"); 
 
         CipherInputStream cis = new CipherInputStream(is,e);
         int test;
         while((test=cis.read())!=-1){
-            System.out.println("Client ["+id+"]:"); 
+            System.out.print("["+id+"]:"); 
         	System.out.println((char) test);
         }
         System.out.println("["+id+"]: "+"Client disconnected");
-    }
+    
 
             
             
