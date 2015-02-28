@@ -57,7 +57,8 @@ public class Client {
             CipherOutputStream cos = new CipherOutputStream(os,cipher); 
             //END G2
 
-            System.out.println("Connected to server");                
+            System.out.println("Connected to server");
+            System.out.println("Mode: "+mode);                
             //while(!(str.equals("exit")))
             out.println(mode);
             out.flush();
