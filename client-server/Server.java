@@ -32,7 +32,7 @@ public class Server {
 	   int client_id = 0;
 
 	   while (true) {
-	      Socket cs = ss.accept();
+	     Socket cs = ss.accept();
 	     Thread t1 = new Thread(new ReadMessage(cs,client_id));
 	     t1.start();
 	     client_id++;
@@ -54,19 +54,24 @@ class ReadMessage implements Runnable {
     }
 
     public void run() {
+    	Boolean firstTime=true;
+    	String cipherMode="";
 	try {
-		/*
+		if (firstTime){
+
+
+	
 	    BufferedReader in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
 
 	    String msg;
             while ((msg = in.readLine()) != null){
-                System.out.println("["+id+"]: "+msg);     
-                
-            TRATAR MENSAGEM
-           
+            	cipherMode=(String) msg;
+                firstTime=false;
+                break;    
            } 
-          System.out.println("["+id+"]: "+"Client disconnected");
-           */ 
+		}
+		else{
+
 
 		InputStream is = this.client.getInputStream();
         String mode="RC4";
@@ -74,13 +79,17 @@ class ReadMessage implements Runnable {
 		byte[] keyfile= Files.readAllBytes(Paths.get("../rc4/chave"));
 		SecretKey key = new SecretKeySpec(keyfile,"RC4");
 		e.init(Cipher.DECRYPT_MODE,key);
-
+        System.out.println("Using cipher "+cipherMode+"for client ["+id+"]"); 
 
         CipherInputStream cis = new CipherInputStream(is,e);
         int test;
         while((test=cis.read())!=-1){
+            System.out.println("Client ["+id+"]:"); 
         	System.out.println((char) test);
         }
+        System.out.println("["+id+"]: "+"Client disconnected");
+    }
+
             
             
 	   
