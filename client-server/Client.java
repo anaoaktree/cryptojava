@@ -33,14 +33,15 @@ public class Client {
         PrintWriter out;
         String str = "", str2;
         Scanner stdin = new Scanner(System.in);
-        
-        //G2
-        String mode = "RC4";
-        //Cipher cipher = new Cipher();
-                
+        //G
+        String mode = "";
+        if (args.length > 0)
+            mode = args[0];
+        else{
+            mode = "RC4";
+        }
         int test;
         //END G2
-
         try{
 
             Cipher cipher = Cipher.getInstance(mode);
@@ -50,7 +51,7 @@ public class Client {
             //G2
             Path kp=Paths.get("../Rc4/chave");
             byte[] keyfile= Files.readAllBytes(kp);
-            SecretKey key = new SecretKeySpec(keyfile,"RC4");
+            SecretKey key = new SecretKeySpec(keyfile,mode);
             cipher.init(Cipher.ENCRYPT_MODE, key);
             OutputStream os = s.getOutputStream();
             CipherOutputStream cos = new CipherOutputStream(os,cipher); 
@@ -58,13 +59,13 @@ public class Client {
 
             System.out.println("Connected to server");                
             //while(!(str.equals("exit")))
+            out.println(mode);
+            out.flush();
+             
             while((test=System.in.read())!=-1)
             {
                 cos.write((byte)test);
                 cos.flush();
-                //str = stdin.nextLine();
-                //out.println(str);
-                //out.flush();
             }
             in.close();
             out.close();
