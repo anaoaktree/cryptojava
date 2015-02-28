@@ -68,12 +68,15 @@ class ReadMessage implements Runnable {
 		if(ciphmode.startsWith("AES")){
 			key = new SecretKeySpec(keyfile,"AES");
 		iv= Files.readAllBytes(Paths.get("./iv"));
+		e.init(Cipher.DECRYPT_MODE,key,new IvParameterSpec(iv));
+
 
 		}
 		else{
 			key = new SecretKeySpec(keyfile,"RC4");
+			e.init(Cipher.DECRYPT_MODE,key);
+
 		}
-		e.init(Cipher.DECRYPT_MODE,key,new IvParameterSpec(iv));
 		return e;
 	}
 	catch (Exception e) {System.out.println(e);}
