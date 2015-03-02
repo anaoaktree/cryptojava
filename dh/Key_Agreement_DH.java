@@ -1,4 +1,4 @@
-package dh.dhkey;
+package dh;
 
 
 import java.math.BigInteger;
