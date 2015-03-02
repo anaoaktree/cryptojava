@@ -1,3 +1,6 @@
+package dh.dhkey;
+
+
 import java.math.BigInteger;
 import java.lang.String;
 import java.security.AlgorithmParameterGenerator;
@@ -14,6 +17,8 @@ public class Key_Agreement_DH {
     	String g="098765r4e3567890";
     	BigInteger bigp = new BigInteger(p);
     	BigInteger gen = new BigInteger(g);
+
+    	public Key_Agreement_DH(){}
 
 
     public BigInteger genSecret(){
