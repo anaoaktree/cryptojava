@@ -5,7 +5,7 @@ Perfil Sistemas Distribuídos e Criptografia (SDC) - Mestrado em Eng. Informáti
 
 Universidade do Minho (UM)
 
-**Por Ana Paula Carvalho e Fábio Fernandes**
+**Por Ana Paula Carvalho pg25335 e Fábio Fernandes pg26119**
 
 ##client-server
 1. Correr o servidor com *./server* (pode ser preciso executar *chmod 777 server*);
