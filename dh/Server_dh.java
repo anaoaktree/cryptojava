@@ -58,6 +58,38 @@ public class Server_dh {
     }
 }
 
+class WriteMessage implements Runnable {
+    private Socket client;
+    private int l;
+    private BigInteger p;
+    private BigInteger g;
+
+
+
+     public WriteMessage(Socket client,BigInteger p, BigInteger g,int id) throws NoSuchAlgorithmException {
+       this.client = client;
+       this.l=id;
+       this.p=p;
+       this.g=g;
+       //this.keyagree = new Key_Agreement_DH();
+
+    }
+
+    public void run(){
+        try{
+        System.out.println("sending parameters");
+        PrintWriter outclient = new PrintWriter(this.client.getOutputStream());
+        outclient.println(new String(this.p.toByteArray()));
+        System.out.println("sending parameters");
+        outclient.println(new String(this.g.toByteArray()));
+        outclient.println(Integer.toString(this.l));
+        //outclient.println(publickey.getEncoded());
+        }
+        catch (Exception e) {System.out.println(e);}
+    }
+
+}
+
 
 
 class ReadMessage implements Runnable {
@@ -103,29 +135,25 @@ class ReadMessage implements Runnable {
         //Gera os parametros P e G
         AlgorithmParameters params= pgen.generateParameters();
         DHParameterSpec dhspec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
-        BigInteger bigp = dhspec.getP();
-        BigInteger bigg = dhspec.getG();
-        int intl = dhspec.getL();
   
         KeyPairGenerator keypair = KeyPairGenerator.getInstance("DH");
         keypair.initialize(dhspec);
         KeyPair kp= keypair.generateKeyPair();
         PublicKey publickey = kp.getPublic();
 
-        System.out.println("sending parameters");
+        BigInteger bigp = dhspec.getP();
+        BigInteger bigg = dhspec.getG();
+        int intl = dhspec.getL();
 
+      Thread w = new Thread(new WriteMessage(this.client,bigp,bigg,intl));
+         w.start();
 
-        PrintWriter outclient = new PrintWriter(this.client.getOutputStream());
-
-        outclient.println(new String(bigp.toByteArray()));
-        outclient.println(new String(bigg.toByteArray()));
-        outclient.println(Integer.toString(intl));
-        outclient.println(publickey.getEncoded());
+        
 
         BufferedReader in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
         String msg;
         ArrayList<String> inparams = new ArrayList<>();
-         while((msg = in.readLine()) != null){
+        while((msg = in.readLine()) != null){
             System.out.println("receiving parameters");
 
                 inparams.add((String) msg);
