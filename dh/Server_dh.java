@@ -9,12 +9,15 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.*;
 import java.lang.String;
+import java.util.*;
+
+import java.math.BigInteger;
 
 import javax.crypto.CipherInputStream;
 import java.security.AlgorithmParameterGenerator;
 import java.security.AlgorithmParameters;
 import java.security.KeyPairGenerator;
-import java.security.KeyPair;
+import java.security.*;
 
 
 
@@ -27,6 +30,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.DHParameterSpec;
+import javax.crypto.KeyAgreement;
+import javax.crypto.*;
 import java.io.InputStream;
 
 
@@ -91,29 +96,49 @@ class ReadMessage implements Runnable {
     }
     public void run() {
     try {
-        Boolean firstTime=true;
+        int count=1;
         String cipherMode="";
         AlgorithmParameterGenerator pgen = AlgorithmParameterGenerator.getInstance("DiffieHellman"); 
         pgen.init(1024);
         //Gera os parametros P e G
         AlgorithmParameters params= pgen.generateParameters();
         DHParameterSpec dhspec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
+        PrintWriter outclient = new PrintWriter(this.client.getOutputStream());
+        BigInteger bigp = dhspec.getP();
+        BigInteger bigg = dhspec.getG();
+        int intl = dhspec.getL();
+  
         KeyPairGenerator keypair = KeyPairGenerator.getInstance("DH");
         keypair.initialize(dhspec);
         KeyPair kp= keypair.generateKeyPair();
-        PrintWriter outclient = new PrintWriter(this.client.getOutputStream());
-        outclient.println(dhspec);
+        PublicKey publickey = kp.getPublic();
 
-        if (firstTime){
+
+        outclient.println(bigp.toString());
+        outclient.println(bigg.toString());
+        outclient.println(Integer.toString(intl));
+        outclient.println(publickey.getEncoded());
+
         BufferedReader in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
         String msg;
-            while ((msg = in.readLine()) != null){
-                cipherMode=(String) msg;
-                firstTime=false;
-                break;    
-           } 
-        }
+        ArrayList<String> inparams = new ArrayList<>();
+         while((msg = in.readLine()) != null){
+                inparams.add((String) msg);
+                count++;
+                if (count ==1) break;  
+        } 
+        /*
+        PrivateKey privkey= kp.getPrivate();
+        PublicKey pubkeyclient = inparams.get(1);
+        KeyAgreement ka = KeyAgreement.getInstance("DH");
+        ka.init(privkey);
+        ka.doPhase(pubkeyclient, true);
+        byte[] secret = ka.generateSecret();
+        */
+
+
         InputStream is = this.client.getInputStream();
+        cipherMode = inparams.get(0);
         System.out.println("["+id+"]: Client connected with cipher "+cipherMode);
         Cipher ciph=decrypt(cipherMode);
         CipherInputStream cis = new CipherInputStream(is,ciph);
