@@ -103,7 +103,6 @@ class ReadMessage implements Runnable {
         //Gera os parametros P e G
         AlgorithmParameters params= pgen.generateParameters();
         DHParameterSpec dhspec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
-        PrintWriter outclient = new PrintWriter(this.client.getOutputStream());
         BigInteger bigp = dhspec.getP();
         BigInteger bigg = dhspec.getG();
         int intl = dhspec.getL();
@@ -113,6 +112,10 @@ class ReadMessage implements Runnable {
         KeyPair kp= keypair.generateKeyPair();
         PublicKey publickey = kp.getPublic();
 
+        System.out.println("sending parameters");
+
+
+        PrintWriter outclient = new PrintWriter(this.client.getOutputStream());
 
         outclient.println(new String(bigp.toByteArray()));
         outclient.println(new String(bigg.toByteArray()));
@@ -123,10 +126,13 @@ class ReadMessage implements Runnable {
         String msg;
         ArrayList<String> inparams = new ArrayList<>();
          while((msg = in.readLine()) != null){
+            System.out.println("receiving parameters");
+
                 inparams.add((String) msg);
                 count++;
                 if (count ==1) break;  
         } 
+        System.out.println(inparams.get(0));
         /*
         PrivateKey privkey= kp.getPrivate();
         PublicKey pubkeyclient = inparams.get(1);
