@@ -82,7 +82,7 @@ public class Client_dh {
             System.out.println("Connected to server");
             System.out.println("Mode: "+mode);                
             out.println(mode);
-            out.flush();
+           
 
             //Receive DH Params from server!
             String server_msg = "";
@@ -103,6 +103,9 @@ public class Client_dh {
             keypairgen.initialize(spec);
             KeyPair keyPair=keypairgen.generateKeyPair(); /*Public and Private Keys*/
             PublicKey pubkey=keyPair.getPublic();
+
+            out.println(pubkey.getEncoded());
+            out.flush();
 
             System.out.println("Big Integer P: "+p);
             System.out.println("Generator g: "+g);
