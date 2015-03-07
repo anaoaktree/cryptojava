@@ -1,4 +1,3 @@
-
 package dh;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -11,13 +10,23 @@ import java.net.*;
 import java.nio.file.*;
 import java.lang.String;
 
-
 import javax.crypto.CipherInputStream;
+import java.security.AlgorithmParameterGenerator;
+import java.security.AlgorithmParameters;
+import java.security.KeyPairGenerator;
+import java.security.KeyPair;
+
+
+
+import java.security.NoSuchAlgorithmException;
+
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.DHParameterSpec;
 import java.io.InputStream;
 
 
@@ -31,10 +40,9 @@ public class Server_dh {
      * @throws java.io.IOException
      */
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
        ServerSocket ss = new ServerSocket(4567);
        int client_id = 0;
-       Key_Agreement_DH k= new Key_Agreement_DH();
 
        while (true) {
          Socket cs = ss.accept();
@@ -43,11 +51,7 @@ public class Server_dh {
          client_id++;
        }
     }
-
-   
 }
-
-
 
 
 
@@ -56,12 +60,14 @@ class ReadMessage implements Runnable {
     private Socket client;
     private int id;
 
+    private Key_Agreement_DH keyagree;
     
-    public ReadMessage(Socket client,int id) {
+    public ReadMessage(Socket client,int id) throws NoSuchAlgorithmException {
        this.client = client;
        this.id=id;
-    }
+       this.keyagree = new Key_Agreement_DH();
 
+    }
     public Cipher decrypt(String ciphmode){
         try{
         Cipher e = Cipher.getInstance(ciphmode);
@@ -72,8 +78,6 @@ class ReadMessage implements Runnable {
             key = new SecretKeySpec(keyfile,"AES");
         iv= Files.readAllBytes(Paths.get("./iv"));
         e.init(Cipher.DECRYPT_MODE,key,new IvParameterSpec(iv));
-
-
         }
         else{
             key = new SecretKeySpec(keyfile,"RC4");
@@ -86,9 +90,20 @@ class ReadMessage implements Runnable {
         return null;
     }
     public void run() {
+    try {
         Boolean firstTime=true;
         String cipherMode="";
-    try {
+        AlgorithmParameterGenerator pgen = AlgorithmParameterGenerator.getInstance("DiffieHellman"); 
+        pgen.init(1024);
+        //Gera os parametros P e G
+        AlgorithmParameters params= pgen.generateParameters();
+        DHParameterSpec dhspec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
+        KeyPairGenerator keypair = KeyPairGenerator.getInstance("DH");
+        keypair.initialize(dhspec);
+        KeyPair kp= keypair.generateKeyPair();
+        PrintWriter outclient = new PrintWriter(this.client.getOutputStream());
+        outclient.println(dhspec);
+
         if (firstTime){
         BufferedReader in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
         String msg;
