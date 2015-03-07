@@ -65,12 +65,12 @@ class ReadMessage implements Runnable {
     private Socket client;
     private int id;
 
-    private Key_Agreement_DH keyagree;
+    //private Key_Agreement_DH keyagree;
     
     public ReadMessage(Socket client,int id) throws NoSuchAlgorithmException {
        this.client = client;
        this.id=id;
-       this.keyagree = new Key_Agreement_DH();
+       //this.keyagree = new Key_Agreement_DH();
 
     }
     public Cipher decrypt(String ciphmode){
@@ -114,8 +114,8 @@ class ReadMessage implements Runnable {
         PublicKey publickey = kp.getPublic();
 
 
-        outclient.println(bigp.toString());
-        outclient.println(bigg.toString());
+        outclient.println(new String(bigp.toByteArray()));
+        outclient.println(new String(bigg.toByteArray()));
         outclient.println(Integer.toString(intl));
         outclient.println(publickey.getEncoded());
 
