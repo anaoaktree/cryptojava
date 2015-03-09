@@ -44,7 +44,7 @@ import javax.crypto.spec.DHParameterSpec;
 public class Client_dh {
     public static void main(String args[])
     {
-        SupportedCiphers supportedCiphers = new SupportedCiphers();
+        SupportedCiphers_ supportedCiphers = new SupportedCiphers_();
         supportedCiphers.add("rc4", "RC4");
         supportedCiphers.add("cbc","AES/CBC/NoPadding");
         supportedCiphers.add("cfb8","AES/CFB8/NoPadding");
@@ -81,29 +81,34 @@ public class Client_dh {
             
             System.out.println("Connected to server");
             System.out.println("Mode: "+mode);                
-            out.println(mode);
+            
            
 
             //Receive DH Params from server!
             String server_msg = "";
             ArrayList<String> dh_params = new ArrayList<>();
             int count_params = 0;
+            
+            System.out.println(serverIn.readLine());
             while (( server_msg = serverIn.readLine()) != null) {
                 dh_params.add(server_msg);
                 count_params ++;
                 if(count_params == 3){ break;}
             }
+
+            System.out.println("xpto");
             BigInteger p = new BigInteger(dh_params.get(0).getBytes());
             BigInteger g = new BigInteger(dh_params.get(1).getBytes());
             int l = Integer.parseInt(dh_params.get(2));
 
             //generate KeyPair
-            DHParameterSpec spec=new DHParameterSpec(p,g,l);
+            DHParameterSpec spec = new DHParameterSpec(p,g,l);
             KeyPairGenerator keypairgen=KeyPairGenerator.getInstance("DH");
             keypairgen.initialize(spec);
             KeyPair keyPair=keypairgen.generateKeyPair(); /*Public and Private Keys*/
             PublicKey pubkey=keyPair.getPublic();
 
+            out.println(mode);
             out.println(pubkey.getEncoded());
             out.flush();
 
@@ -164,10 +169,10 @@ class Encrypt{
 }
 
 
-class SupportedCiphers{
+class SupportedCiphers_{
     private HashMap<String, String> ciphers;
     
-    public SupportedCiphers(){
+    public SupportedCiphers_(){
         this.ciphers = new HashMap<String, String>();
     }
 
