@@ -139,27 +139,27 @@ class ClientReaderDHParams implements Runnable {
             byte[] sessionKeyBytes = ka.generateSecret();
 
             // Create the session key
-            //SecretKeyFactory skf = SecretKeyFactory.getInstance("TripleDES");
-            //DESedeKeySpec tripleDesSpec = new DESedeKeySpec(sessionKeyBytes);
-            //SecretKey sessionKey = skf.generateSecret(tripleDesSpec);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("TripleDES");
+            DESedeKeySpec tripleDesSpec = new DESedeKeySpec(sessionKeyBytes);
+            SecretKey sessionKey = skf.generateSecret(tripleDesSpec);
 
             // Create the CipherStream to be used
             System.out.println("Creating the CipherStream");
-            //Cipher cipher = Cipher.getInstance("TripleDES/CFB8/NoPadding");
+            Cipher cipher = Cipher.getInstance("TripleDES/CFB8/NoPadding");
 
-            //IvParameterSpec ivSpec = new IvParameterSpec(iv);
-            //cipher.init(Cipher.ENCRYPT_MODE, sessionKey, ivSpec);            
-            Cipher cipher = Cipher.getInstance(mode);
-
-            SecretKey sessionKey;
-            if(mode.startsWith("AES")){
-                sessionKey = new SecretKeySpec(sessionKeyBytes,"AES");    
-                cipher.init(Cipher.ENCRYPT_MODE, sessionKey,new IvParameterSpec(iv));
-            }
-            else{
-                sessionKey = new SecretKeySpec(sessionKeyBytes,"RC4");
-                cipher.init(Cipher.ENCRYPT_MODE, sessionKey);
-            }
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            cipher.init(Cipher.ENCRYPT_MODE, sessionKey, ivSpec);            
+            
+            //Cipher cipher = Cipher.getInstance(mode);
+            //(SecretKey sessionKey;
+            //if(mode.startsWith("AES")){
+            //    sessionKey = new SecretKeySpec(sessionKeyBytes,"AES");    
+            //    cipher.init(Cipher.ENCRYPT_MODE, sessionKey,new IvParameterSpec(iv));
+            //}
+            //else{
+            //    sessionKey = new SecretKeySpec(sessionKeyBytes,"RC4");
+            //    cipher.init(Cipher.ENCRYPT_MODE, sessionKey);
+            //}
 
             
             CipherOutputStream cipherOut = new CipherOutputStream(server.getOutputStream(), cipher);
