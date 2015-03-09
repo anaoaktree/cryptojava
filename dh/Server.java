@@ -139,36 +139,41 @@ class SendDHParams implements Runnable {
 
             // Create the session key
             System.out.println("********** Creating the Session Key with Client ["+this.id+"] ");
-            //SecretKeyFactory skf = SecretKeyFactory.getInstance("TripleDES");
-            //DESedeKeySpec tripleDesSpec = new DESedeKeySpec(sessionKeyBytes);
-            //SecretKey sessionKey = skf.generateSecret(tripleDesSpec);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("TripleDES");
+            DESedeKeySpec tripleDesSpec = new DESedeKeySpec(sessionKeyBytes);
+            SecretKey sessionKey = skf.generateSecret(tripleDesSpec);
 
             // Create the CipherStream to be used
             System.out.println("********** Creating the CipherStream to Client ["+this.id+"]");
 
-            //Cipher decrypter = Cipher.getInstance("TripleDES/CFB8/NoPadding");
-            //IvParameterSpec spec = new IvParameterSpec(iv);
-            //decrypter.init(Cipher.DECRYPT_MODE, sessionKey, spec);
+            Cipher decrypter = Cipher.getInstance("TripleDES/CFB8/NoPadding");
+            IvParameterSpec spec = new IvParameterSpec(iv);
+            decrypter.init(Cipher.DECRYPT_MODE, sessionKey, spec);
             
-            SecretKey sessionKey;
-            Cipher decrypter = Cipher.getInstance(ciphmode);
-            if(ciphmode.startsWith("AES")){
-                sessionKey = new SecretKeySpec(sessionKeyBytes,"AES");
-                decrypter.init(Cipher.DECRYPT_MODE,sessionKey,new IvParameterSpec(iv));
-            }
-            else{
-                sessionKey = new SecretKeySpec(sessionKeyBytes,"RC4");
-                decrypter.init(Cipher.DECRYPT_MODE,sessionKey);
-            }
+            //SecretKey sessionKey;
+            //Cipher decrypter = Cipher.getInstance(ciphmode);
+            //if(ciphmode.startsWith("AES")){
+            //    sessionKey = new SecretKeySpec(sessionKeyBytes,"AES");
+            //    decrypter.init(Cipher.DECRYPT_MODE,sessionKey,new IvParameterSpec(iv));
+            //}
+            //else{
+            //    sessionKey = new SecretKeySpec(sessionKeyBytes,"RC4");
+            //    decrypter.init(Cipher.DECRYPT_MODE,sessionKey);
+            //}
 
             CipherInputStream cipherIn = new CipherInputStream(client.getInputStream(), decrypter);
 
             int test;
+            int inicio_mensagem = 1;
             while((test=cipherIn.read())!=-1){
-                if((char) test == '\n'){
-                    System.out.print(" <-- ["+id+"]");
-                } 
+                if(inicio_mensagem == 1){
+                     System.out.print("["+id+"]: ");
+                     inicio_mensagem = 0;
+                }
                 System.out.print((char) test);
+                if((char) test == '\n'){
+                    inicio_mensagem = 1;
+                } 
             }
             System.out.println("["+id+"]: "+"Client disconnected");
 
