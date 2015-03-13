@@ -1,5 +1,9 @@
 package secure_channel;
 
+/**
+ *
+ * @author Ana Paula Carvalho and Fábio Fernandes
+ */
 
 import java.math.BigInteger;
 import java.lang.String;
@@ -55,17 +59,17 @@ public class Key_Agreement_DH {
 
     }
 
-     /*
-            * Performs the KeyAgreement
-            */
+    /*
+    * Performs the KeyAgreement
+    */
 
     public byte[] keyAgreement(byte[] keyBytes){
         try{
-        KeyAgreement ka = KeyAgreement.getInstance("DH");
-        ka.init(this.keyPair.getPrivate());
-        ka.doPhase(this.decodeX509(keyBytes),true);
-        return ka.generateSecret();
-    } catch (Exception e) {System.out.println(e);return null;}
+            KeyAgreement ka = KeyAgreement.getInstance("DH");
+            ka.init(this.keyPair.getPrivate());
+            ka.doPhase(this.decodeX509(keyBytes),true);
+            return ka.generateSecret();
+        } catch (Exception e) {System.out.println(e);return null;}
 
     }
 
@@ -73,22 +77,20 @@ public class Key_Agreement_DH {
     public void genParams(String mode){
         try{
         //Parameter Generator P,G,l
-            
             AlgorithmParameterGenerator pgen = AlgorithmParameterGenerator.getInstance("DiffieHellman"); 
             pgen.init(1024);
             DHParameterSpec dhspec;
             if (mode=="auto"){
-            AlgorithmParameters params= pgen.generateParameters();
-            dhspec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
+                AlgorithmParameters params= pgen.generateParameters();
+                dhspec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
             }
             else{
-            dhspec = new DHParameterSpec(this.bigp,this.bigg);
+                dhspec = new DHParameterSpec(this.bigp,this.bigg);
             }
             KeyPairGenerator keypairGen = KeyPairGenerator.getInstance("DH");
             keypairGen.initialize(dhspec);
             this.keyPair= keypairGen.generateKeyPair();
             PublicKey publickey = keyPair.getPublic();
-
             this.bigp = dhspec.getP();
             this.bigg = dhspec.getG();
             this.intl = dhspec.getL();
