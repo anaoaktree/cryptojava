@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Scanner;
 import java.io.*;
+
+
 import javax.crypto.CipherInputStream;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -17,6 +19,8 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.*;
+
+
 import java.nio.file.Files;
 import java.nio.file.*;
 import java.nio.charset.Charset;
@@ -36,7 +40,6 @@ public class Client {
         supportedCiphers.add("cbc","AES/CBC/NoPadding");
         supportedCiphers.add("cfb8","AES/CFB8/NoPadding");
         supportedCiphers.add("cfb","AES/CFB/NoPadding");
-
         supportedCiphers.add("cbc_pdd","AES/CBC/PKCS5Padding");
         supportedCiphers.add("cfb8_pdd","AES/CFB8/PKCS5Padding");
 

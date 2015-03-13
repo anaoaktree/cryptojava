@@ -82,14 +82,11 @@ class ReadMessage implements Runnable {
 	catch (Exception e) {System.out.println(e);}
 		return null;
     }
-    
-
     public void run() {
     	Boolean firstTime=true;
     	String cipherMode="";
 	try {
 		if (firstTime){
-
 	    BufferedReader in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
 	    String msg;
             while ((msg = in.readLine()) != null){
@@ -108,14 +105,6 @@ class ReadMessage implements Runnable {
         	System.out.println((char) test);
         }
         System.out.println("["+id+"]: "+"Client disconnected");
-    
-
-            
-            
-	   
 	} catch (Exception e) {System.out.println(e);}
     }
-
-
-
 }

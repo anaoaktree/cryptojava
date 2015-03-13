@@ -111,9 +111,10 @@ class ReadMessage implements Runnable {
             SecureRandom sr = new SecureRandom();
             sr.nextBytes(iv);
             out.write(iv);
+
+
             Decrypt dec = new Decrypt();
             Cipher ciph=dec.decrypt(cipherMode, sessionKeyBytes, iv);
-            
             CipherInputStream cis = new CipherInputStream(this.client.getInputStream(),ciph);
             int test;
             int inicio_mensagem = 1;
