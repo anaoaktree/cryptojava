@@ -23,7 +23,9 @@ public class StationtoStation{
     ***/
     public SealedObject sign(Cipher enc, PrivateKey priv, byte[] gx, byte[] gy){
         try{
+            //Inicializada a chave privada Usar RSAPrivateKey?
             sig.initSign(priv);
+            // O par X,Y é assinado. Talvez sem calcular gx e gy explicitamente?
             sig.update(gx);
             sig.update(gy);
             byte[] assinaturaXY = sig.sign();
@@ -41,6 +43,7 @@ public class StationtoStation{
     public Boolean verify(Cipher dec, SealedObject sigXY2, PublicKey pub, byte[] gx, byte[] gy){
         try{
             byte[] assinaturaXY2 = (byte[]) sigXY2.getObject(dec);
+            //Validacao da assinatura usando a chave publica do outro interveniente
             sig.initVerify(pub);
             sig.update(gx);
             sig.update(gy);
