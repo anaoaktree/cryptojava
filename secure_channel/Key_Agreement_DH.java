@@ -48,6 +48,8 @@ public class Key_Agreement_DH {
     public int getL(){ return this.intl;}
 
     public PublicKey getPublicKey(){ return  this.keyPair.getPublic();}
+    public PrivateKey getPrivateKey(){ return  this.keyPair.getPrivate();}
+
 
 
     public PublicKey decodeX509(byte[] keyBytes){

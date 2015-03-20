@@ -75,6 +75,16 @@ public class Client {
             in.readFully(pubServer);
 
             /**
+            * Gets dig sig from server and verifies it
+            **/
+            byte[] dig = new byte[in.readInt()];
+            in.readFully(dig);
+            StationtoStation digsig= new StationtoStation();
+            Boolean t= digsig.verify(dig, pubServer, pubSelf);
+            System.out.println("DIG SIGN: " + t);
+
+
+            /**
             *
             *ka.generateSecret() generates the shared secret between two parties
             */

@@ -83,11 +83,20 @@ class ReadMessage implements Runnable {
             out.writeInt(pubSelf.length);
             out.write(pubSelf);
 
+
             /**
             * Gets public key from client
             **/
             byte[] pubClient = new byte[in.readInt()];
             in.readFully(pubClient);
+
+            /**
+            * Station to station dig signature
+            */
+            StationtoStation digsig= new StationtoStation();
+            byte[] sig = digsig.sign(dh_agreement.getPrivateKey(), pubSelf, pubClient);
+            out.writeInt(sig.length);
+            out.write(sig);
 
     		/**
     		*
