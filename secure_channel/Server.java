@@ -98,7 +98,14 @@ class ReadMessage implements Runnable {
             RSAPrivateKeySpec rsaPrivateKey = new RSAPrivateKeySpec(dh_agreement.getP(),dh_agreement.getG());
         
             PrivateKey privKey = KeyFactory.getInstance("RSA").generatePrivate(rsaPrivateKey);
-            
+           /** Devia funcionar! exemplo em http://www.programcreek.com/java-api-examples/index.php?api=java.security.KeyFactory
+
+            KeyFactory keyFactory=KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec pkeySpec =new PKCS8EncodedKeySpec(dh_agreement.getPrivateKey().getEncoded());
+            RSAPrivateCrtKey rsaPrivateKey=(RSAPrivateCrtKey) keyFactory.generatePrivate(pkeySpec);
+            RSAPublicKeySpec publicKeySpec=new RSAPublicKeySpec(rsaPrivateKey.getModulus(),rsaPrivateKey.getPublicExponent());
+            PublicKey publicKey=keyFactory.generatePublic(publicKeySpec);
+*/
             byte[] sig = digsig.sign(privKey, pubSelf, pubClient);
             out.writeInt(sig.length);
             out.write(sig);
