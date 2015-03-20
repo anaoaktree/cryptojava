@@ -80,7 +80,9 @@ public class Client {
             byte[] dig = new byte[in.readInt()];
             in.readFully(dig);
             StationtoStation digsig= new StationtoStation();
-            Boolean t= digsig.verify(dig, pubServer, pubSelf);
+            RSAPublicKeySpec rsaPubKey = new RSAPublicKeySpec(dh_agreement.getP(),dh_agreement.getG());
+            PublicKey pubKey = KeyFactory.getInstance("RSA").generatePublic(rsaPubKey);
+            Boolean t= digsig.verify(dig, pubKey, pubServer, pubSelf);
             System.out.println("DIG SIGN: " + t);
 
 

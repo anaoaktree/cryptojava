@@ -94,7 +94,12 @@ class ReadMessage implements Runnable {
             * Station to station dig signature
             */
             StationtoStation digsig= new StationtoStation();
-            byte[] sig = digsig.sign(dh_agreement.getPrivateKey(), pubSelf, pubClient);
+
+            RSAPrivateKeySpec rsaPrivateKey = new RSAPrivateKeySpec(dh_agreement.getP(),dh_agreement.getG());
+        
+            PrivateKey privKey = KeyFactory.getInstance("RSA").generatePrivate(rsaPrivateKey);
+            
+            byte[] sig = digsig.sign(privKey, pubSelf, pubClient);
             out.writeInt(sig.length);
             out.write(sig);
 
