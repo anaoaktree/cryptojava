@@ -91,24 +91,52 @@ class ReadMessage implements Runnable {
             in.readFully(pubClient);
 
             /**
+            *Generating RSA keys
+            */
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048);
+            KeyPair kp = kpg.genKeyPair();
+            PublicKey publicKey = kp.getPublic();
+            PrivateKey privateKey = kp.getPrivate();
+            KeyFactory fact = KeyFactory.getInstance("RSA");
+            RSAPublicKeySpec pub = fact.getKeySpec(publicKey, RSAPublicKeySpec.class);
+            RSAPrivateKeySpec priv = fact.getKeySpec(privateKey, RSAPrivateKeySpec.class);
+            //Sends modulus and public exponent to client
+            byte[] mod=pub.getModulus().toByteArray();
+            byte[] pubexp=pub.getPublicExponent().toByteArray();
+
+
+            out.writeInt(mod.length);
+            out.write(mod);
+            out.writeInt(pubexp.length);
+            out.write(pubexp);
+            out.writeInt(publicKey.getEncoded().length);
+            out.write(publicKey.getEncoded());
+             byte[] rsaClient = new byte[in.readInt()];
+            in.readFully(rsaClient);
+
+
+            /**
             * Station to station dig signature
             */
             StationtoStation digsig= new StationtoStation();
 
-            RSAPrivateKeySpec rsaPrivateKey = new RSAPrivateKeySpec(dh_agreement.getP(),dh_agreement.getG());
+            byte[] sig = digsig.sign(privateKey, publicKey.getEncoded(), rsaClient);
+            out.writeInt(sig.length);
+            out.write(sig);
+
         
-            PrivateKey privKey = KeyFactory.getInstance("RSA").generatePrivate(rsaPrivateKey);
            /** Devia funcionar! exemplo em http://www.programcreek.com/java-api-examples/index.php?api=java.security.KeyFactory
 
             KeyFactory keyFactory=KeyFactory.getInstance("RSA");
             PKCS8EncodedKeySpec pkeySpec =new PKCS8EncodedKeySpec(dh_agreement.getPrivateKey().getEncoded());
-            RSAPrivateCrtKey rsaPrivateKey=(RSAPrivateCrtKey) keyFactory.generatePrivate(pkeySpec);
+            KeySpec kspec= (KeySpec) pkeySpec;
+            RSAPrivateCrtKey rsaPrivateKey=(RSAPrivateCrtKey) keyFactory.generatePrivate(kspec);
             RSAPublicKeySpec publicKeySpec=new RSAPublicKeySpec(rsaPrivateKey.getModulus(),rsaPrivateKey.getPublicExponent());
             PublicKey publicKey=keyFactory.generatePublic(publicKeySpec);
+            
+
 */
-            byte[] sig = digsig.sign(privKey, pubSelf, pubClient);
-            out.writeInt(sig.length);
-            out.write(sig);
 
     		/**
     		*

@@ -41,12 +41,12 @@ public class StationtoStation{
  /**
     *A party (B) verifies the object he got from another party (A) and see if it matches
     ***/
-    public Boolean verify(byte[] sign, PublicKey pub, byte[] otherpub, byte[] mypub){
+    public Boolean verify(byte[] sign, PublicKey pub, byte[] otherpub){
         try{
             //byte[] assinaturaXY2 = (byte[]) sigXY2.getObject(dec);
             //Validacao da assinatura usando a chave publica do outro interveniente
             sig.initVerify(pub);
-            sig.update(mypub);
+            sig.update(pub.getEncoded());
             sig.update(otherpub);
             Boolean verif=sig.verify(sign);
             System.out.println("DIG VERIF: " + verif);

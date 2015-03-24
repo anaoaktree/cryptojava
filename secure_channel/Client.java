@@ -74,16 +74,40 @@ public class Client {
             byte[] pubServer = new byte[in.readInt()];
             in.readFully(pubServer);
 
+
+
+            /***
+            *Reads and generates RSA key pair
+            **/
+            byte[] modulo = new byte[in.readInt()];
+            in.readFully(modulo);
+            BigInteger bigmod = new BigInteger(modulo);
+
+            byte[] pubexp = new byte[in.readInt()];
+            in.readFully(pubexp);
+            BigInteger bigexp = new BigInteger(pubexp);
+
+            byte[] pubserver = new byte[in.readInt()];
+            in.readFully(pubserver);
+
+            RSAPrivateKeySpec rsaPrivateKey = new RSAPrivateKeySpec(bigmod,bigexp);
+            RSAPublicKeySpec rsaPubKey = new RSAPublicKeySpec(bigmod,bigexp);
+            PublicKey pubKey = KeyFactory.getInstance("RSA").generatePublic(rsaPubKey);
+
+
+            out.writeInt(pubKey.getEncoded().length);
+            out.write(pubKey.getEncoded());
+
+
             /**
             * Gets dig sig from server and verifies it
             **/
             byte[] dig = new byte[in.readInt()];
             in.readFully(dig);
+
             StationtoStation digsig= new StationtoStation();
-            RSAPublicKeySpec rsaPubKey = new RSAPublicKeySpec(dh_agreement.getP(),dh_agreement.getG());
-            PublicKey pubKey = KeyFactory.getInstance("RSA").generatePublic(rsaPubKey);
-            Boolean t= digsig.verify(dig, pubKey, pubServer, pubSelf);
-            System.out.println("DIG SIGN: " + t);
+            Boolean t= digsig.verify(dig, pubKey, pubserver);
+            System.out.println("DIG verif: " + t);
 
 
             /**
