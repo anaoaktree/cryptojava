@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Segurança de Sistemas Informáticos (SSI) : Trabalhos da UC de SSI ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Segurança de Sistemas Informáticos (SSI)</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/anapmc/SSI1415">View on GitHub</a>
+
+          <h1 id="project_title">Segurança de Sistemas Informáticos (SSI)</h1>
+          <h2 id="project_tagline">Trabalhos da UC de SSI </h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/anapmc/SSI1415/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/anapmc/SSI1415/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="trabalhos-práticos" class="anchor" href="#trabalhos-pr%C3%A1ticos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trabalhos Práticos</h1>
+
+<p>Trabalhos práticos da UC de Segurança de Sistemas Informáticos (SSI) jj</p>
+
+<p>Perfil Sistemas Distribuídos e Criptografia (SDC) - Mestrado em Eng. Informática (MEI)</p>
+
+<p>Universidade do Minho (UM)</p>
+
+<p><strong>Por Ana Paula Carvalho pg25335 e Fábio Fernandes pg26119</strong></p>
+
+<h2>
+<a id="client-server" class="anchor" href="#client-server" aria-hidden="true"><span class="octicon octicon-link"></span></a>client-server</h2>
+
+<ol>
+<li>Correr o servidor com <em>./server</em> (pode ser preciso executar <em>chmod 777 server</em>);</li>
+<li><p>Correr o cliente com <em>./client</em>;</p></li>
+</ol>
+
+<ul>
+<li>O cliente abre uma interface de escrita. Tudo o que é escrito é impresso no servidor com o id do cliente.</li>
+<li>O servidor fica à escuta de mensagens dos clientes, que imprime no ecrã.</li>
+</ul>
+
+<p>O cliente foi atualizado para enviar mensagens (byte a byte) cifradas ao servidor, que as decifra. </p>
+
+<h4>
+<a id="para-escolher-uma-das-várias-cifras-e-modos" class="anchor" href="#para-escolher-uma-das-v%C3%A1rias-cifras-e-modos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Para escolher uma das várias cifras e modos:</h4>
+
+<ol>
+<li>Correr normalmente o servidor (ver acima);</li>
+<li> <strong>RC4</strong>: Correr o cliente com <em>./client</em> ou <em>./client rc4</em>;</li>
+<li> <strong>AES/CBC/NoPadding</strong>: Correr o cliente com <em>./client cbc</em>;</li>
+<li>
+<strong>AES/CBC/PKCS5Padding</strong>: Correr o cliente com  <em>./client cbc_pdd</em>;</li>
+<li> <strong>AES/CFB8/NoPadding</strong>: Correr o cliente com <em>./client cfb8</em>;</li>
+<li> <strong>AES/CFB8/PKCS5Padding</strong>: Correr o cliente com <em>./client cbf8_pdd</em>;</li>
+<li> <strong>AES/CFB/NoPadding</strong>: Correr o cliente com <em>./client cfb</em>;</li>
+</ol>
+
+<h2>
+<a id="rc4" class="anchor" href="#rc4" aria-hidden="true"><span class="octicon octicon-link"></span></a>rc4</h2>
+
+<h3>
+<a id="implementação-jcajce-rc4java" class="anchor" href="#implementa%C3%A7%C3%A3o-jcajce-rc4java" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementação JCA/JCE (Rc4.java)</h3>
+
+<ul>
+<li>
+<strong>Pré-requisitos</strong>: ter um ficheiro <em>texto_limpo</em> (sem extensões) na diretoria.</li>
+<li>
+<strong>Gerar chave</strong>: escrever uma chave no ficheiro <em>chave</em> ou correr <em>./gerar_chave</em>;</li>
+<li>
+<strong>Cifrar</strong>: correr <em>./cifrar_rc4</em> utiliza os ficheiros <em>chave</em> e <em>texto_limpo</em> e cifra para o ficheiro <em>criptograma</em>;</li>
+<li>
+<strong>Decifrar</strong>: correr <em>./decifrar_rc4</em> utiliza os ficheiros <em>chave</em> e <em>criptograma</em> e decifra para o ficheiro <em>texto_decifrado</em>;</li>
+</ul>
+
+<h4>
+<a id="alternativa" class="anchor" href="#alternativa" aria-hidden="true"><span class="octicon octicon-link"></span></a>Alternativa:</h4>
+
+<ul>
+<li>
+<strong>java Rc4 -genkey</strong> <em>ficheiro_chave</em>
+</li>
+<li>
+<strong>java Rc4 -enc</strong> <em>ficheiro_chave</em> <em>ficheiro_texto_limpo</em> <em>ficheiro_criptograma</em>
+</li>
+<li>
+<strong>java Rc4 -dec</strong> <em>ficheiro_chave</em> <em>ficheiro_criptograma</em> <em>ficheiro_texto_decifrado</em>
+</li>
+</ul>
+
+<h3>
+<a id="implementação-própria-arc4java" class="anchor" href="#implementa%C3%A7%C3%A3o-pr%C3%B3pria-arc4java" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementação própria (Arc4.java)</h3>
+
+<p>Em desenvolvimento</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Segurança de Sistemas Informáticos (SSI) maintained by <a href="https://github.com/anapmc">anapmc</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
