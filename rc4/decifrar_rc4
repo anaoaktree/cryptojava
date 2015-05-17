@@ -1,5 +1,0 @@
-#!/bin/bash
-
-javac Rc4.java
-java Rc4 -dec chave criptograma texto_decifrado
-
