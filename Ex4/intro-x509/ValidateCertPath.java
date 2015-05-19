@@ -17,6 +17,8 @@
 import java.io.*;
 import java.security.cert.*;
 import java.util.*;
+
+
 public class ValidateCertPath {
     public static void main(String[] args) throws Exception {
     if (args.length == 0)
@@ -68,8 +70,7 @@ public class ValidateCertPath {
      * @return X509Certificate
      * @throws Exception on error
      */
-    public static X509Certificate getCertFromFile(String certFilePath)
-        throws Exception {
+    public static X509Certificate getCertFromFile(String certFilePath) throws Exception {
         X509Certificate cert = null;
         File certFile = new File(certFilePath);
         FileInputStream certFileInputStream = new FileInputStream(certFile);
