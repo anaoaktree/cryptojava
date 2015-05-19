@@ -6,7 +6,9 @@ Universidade do Minho (UM)
 
 **Por Ana Paula Carvalho pg25335 e Fábio Fernandes pg26119**
 
-Visitar [documentação](https://anapmc.github.io/SSI1415/)
+Visitar [documentação](https://anapmc.github.io/cryptojava/)
+
+Read the [docs](https://anapmc.github.io/cryptojava/)
 
 
 
