@@ -99,16 +99,6 @@ public class Client {
             out.write(pubKey.getEncoded());
 
 
-            /**
-            * Gets dig sig from server and verifies it
-            **/
-            byte[] dig = new byte[in.readInt()];
-            in.readFully(dig);
-
-            StationtoStation digsig= new StationtoStation();
-            Boolean t= digsig.verify(dig, pubKey, pubserver);
-            System.out.println("DIG verif: " + t);
-
 
             /**
             *

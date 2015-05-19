@@ -116,15 +116,6 @@ class ReadMessage implements Runnable {
             in.readFully(rsaClient);
 
 
-            /**
-            * Station to station dig signature
-            */
-            StationtoStation digsig= new StationtoStation();
-
-            byte[] sig = digsig.sign(privateKey, publicKey.getEncoded(), rsaClient);
-            out.writeInt(sig.length);
-            out.write(sig);
-
         
            /** Devia funcionar! exemplo em http://www.programcreek.com/java-api-examples/index.php?api=java.security.KeyFactory
 
