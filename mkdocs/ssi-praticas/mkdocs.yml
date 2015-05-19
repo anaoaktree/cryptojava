@@ -1,7 +1,0 @@
-site_name: SSI - Exercícios Práticos
-pages:
-- [index.md, Home]
-- [aula1.md, Aula1]
-- [aula2.md, Aula2]
-
-theme: cosmo

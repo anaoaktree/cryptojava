@@ -1,3 +1,0 @@
-http://www.programcreek.com/java-api-examples/index.php?api=java.security.KeyPairGenerator
-
-http://www.java2s.com/Tutorial/Java/0490__Security/TamperedmessagewithHMacencryptionwithAESinCTRmode.htm
