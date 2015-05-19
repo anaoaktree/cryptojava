@@ -121,6 +121,8 @@
     
         <li class="main "><a href="#42-using-x509-certificates">4.2 - Using X509 certificates</a></li>
         
+            <li><a href="#obter-certificados-e-chaves-privs-pubk-do-servidor-priv-servidor-pub-cliente-priv-cliente-autoridade-de-certificacao-programa-java-para-validacao">Obter certificados e chaves privs pubk do servidor, priv servidor, pub cliente, priv cliente autoridade de certificação; Programa Java para validação</a></li>
+        
     
         <li class="main "><a href="#referencias">Referências</a></li>
         
@@ -131,6 +133,12 @@
 
 <h1 id="41-station-to-station">4.1 - Station-to-Station</h1>
 <h1 id="42-using-x509-certificates">4.2 - Using X509 certificates</h1>
+<p>As chaves públicas do protocolo Station-to-station necessitam de ser certificadas por autoridades de confiança (CA). Neste exercício vamos basear-nos em certificados X509.</p>
+<h3 id="obter-certificados-e-chaves-privs-pubk-do-servidor-priv-servidor-pub-cliente-priv-cliente-autoridade-de-certificacao-programa-java-para-validacao">Obter certificados e chaves privs <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro-x509/certs/server_cert.pem">pubk do servidor</a>, <a href="https://github.com/anapmc/cryptojava/blob/master/Ex4/intro-x509/certs/server_key.pk8?raw=true">priv servidor</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro-x509/certs/client_cert.pem">pub cliente</a>, <a href="https://github.com/anapmc/cryptojava/blob/master/Ex4/intro-x509/certs/client_key.pk8?raw=true">priv client</a>e <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro-x509/certs/cacert.pem">autoridade de certificação</a>; Programa Java para <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro-x509/ValidateCertPath.java">validação</a></h3>
+<ol>
+<li>Após compilar, correr <code>java ValidateCertPath cacert.pem server_cert.pem</code> para verificar a validade do servidor ou <code>java ValidateCertPath cacert.pem client_cert.pem</code> para verificar a validade do cliente.</li>
+</ol>
+<p>Continua....</p>
 <h1 id="referencias">Referências</h1>
 <ul>
 <li><a href="http://en.wikipedia.org/wiki/Station-to-Station_protocol">Station-to-Station - wikipedia</a></li>
