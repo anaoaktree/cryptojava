@@ -66,10 +66,10 @@ public class Key_Agreement_DH {
     * Performs the KeyAgreement
     */
 
-    public byte[] keyAgreement(byte[] keyBytes){
+    public byte[] keyAgreement(byte[] keyBytes, PrivateKey privkey){
         try{
             KeyAgreement ka = KeyAgreement.getInstance("DH");
-            ka.init(this.keyPair.getPrivate());
+            ka.init(privkey);
             ka.doPhase(this.decodeX509(keyBytes),true);
             return ka.generateSecret();
         } catch (Exception e) {System.out.println(e);return null;}

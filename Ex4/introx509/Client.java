@@ -20,7 +20,10 @@ import java.security.spec.*; /*InvalidParameterSpecException; InvalidKeySpecExce
 import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGenerator; SecretKey */
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
 
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.spec.RSAPublicKeySpec;
 
+import introx509.MyValidateCertPath;
 
 public class Client {
 
@@ -58,15 +61,34 @@ public class Client {
 
             DataInputStream in = new DataInputStream(s.getInputStream());
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
+            /**
+            * Priv key pk8 to pub key
+            */
+            byte[] encKey= Files.readAllBytes(Paths.get("./introx509/certs/client_key.pk8"));
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encKey);
+            KeyFactory kfact = KeyFactory.getInstance("RSA");
+            PrivateKey myPrivateKey = kfact.generatePrivate(keySpec);
+            RSAPrivateCrtKey privk = (RSAPrivateCrtKey)myPrivateKey;
+            RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(privk.getModulus(), privk.getPublicExponent());
+            PublicKey pubSelf1 = kfact.generatePublic(publicKeySpec);
+            byte[] pubSelf=pubSelf1.getEncoded();
+
             
+
+
+            Key_Agreement_DH dh_agreement= new Key_Agreement_DH();
             /**
             * Computes DH key Agreement and sends public key to client
+            *
+            *dh_agreement.genParams("manual");
+*
+ *           byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
             **/ 
-            Key_Agreement_DH dh_agreement= new Key_Agreement_DH();
-            dh_agreement.genParams("manual");
-            byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
+
+            //Sends pub to server
             out.writeInt(pubSelf.length);
             out.write(pubSelf);
+
 
             /**
             * Gets public key from server
@@ -74,6 +96,24 @@ public class Client {
             byte[] pubServer = new byte[in.readInt()];
             in.readFully(pubServer);
 
+            /**
+            * Gets certificatepath
+            **/
+            byte[] servercert = new byte[in.readInt()];
+            in.readFully(servercert);
+
+            String serverCertPath = new String(servercert, "UTF-8");
+
+            //MyValidCertPath certValid= new MyValidCertPath();
+            //certValid.validate("./introx509/certs/cacert.pem", serverCertPath)
+            System.out.println("Certificate path is "+ serverCertPath);
+
+            //Sends certificate
+            String myCertPath = "./introx509/certs/client_cert.pem";
+            byte[] certb= myCertPath.getBytes();
+            
+            out.writeInt(certb.length);
+            out.write(certb);
 
 
             /***
@@ -114,7 +154,7 @@ public class Client {
             *
             *ka.generateSecret() generates the shared secret between two parties
             */
-            byte[] sessionKeyBytes = dh_agreement.keyAgreement(pubServer);
+            byte[] sessionKeyBytes = dh_agreement.keyAgreement(pubServer,myPrivateKey);
             MessageDigest sha = MessageDigest.getInstance("SHA-1");
             sessionKeyBytes=sha.digest(sessionKeyBytes);
             sessionKeyBytes=Arrays.copyOf(sessionKeyBytes,16);

@@ -23,6 +23,19 @@ import java.util.*;
 
 
 public class MyValidateCertPath {
+    public Boolean validate(String trustAnchor,String certPath) throws Exception{
+        PKIXParameters params = createParams(trustAnchor);
+        try{
+        CertPath cp = createPath(certPath);
+        CertPathValidator cpv = CertPathValidator.getInstance("PKIX");
+        CertPathValidatorResult cpvr = cpv.validate(cp, params);
+        System.out.println(cpvr);
+        return true;
+    } catch(CertPathValidatorException e){System.out.println("cert did not validate");return false;}
+
+    }
+
+/*
     public static void main(String[] args) throws Exception {
     if (args.length == 0)
         throw new Exception("must specify at least trustAnchor");
@@ -38,6 +51,7 @@ public class MyValidateCertPath {
     CertPathValidatorResult cpvr = cpv.validate(cp, params);
     System.out.println(cpvr);
     }
+    */
     public static PKIXParameters createParams(String anchorFile) throws Exception {
         TrustAnchor anchor = new TrustAnchor(getCertFromFile(anchorFile), null);
         Set anchors = Collections.singleton(anchor);

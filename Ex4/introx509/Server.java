@@ -19,7 +19,8 @@ import java.security.spec.*; /*InvalidParameterSpecException; InvalidKeySpecExce
 
 import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGenerator; SecretKey */
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
-
+ import java.security.interfaces.RSAPrivateCrtKey;
+import introx509.MyValidateCertPath;
 
 /**
  *
@@ -75,13 +76,36 @@ class ReadMessage implements Runnable {
             DataInputStream in = new DataInputStream(client.getInputStream());
                 
             /**
+            * Priv key pk8 to pub key
+            */
+            byte[] encKey= Files.readAllBytes(Paths.get("./introx509/certs/server_key.pk8"));
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encKey);
+            KeyFactory kfact = KeyFactory.getInstance("RSA");
+            PrivateKey myPrivateKey = kfact.generatePrivate(keySpec);
+            RSAPrivateCrtKey privk = (RSAPrivateCrtKey)myPrivateKey;
+            RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(privk.getModulus(), privk.getPublicExponent());
+            PublicKey pubSelf1 = kfact.generatePublic(publicKeySpec);
+            byte[] pubSelf=pubSelf1.getEncoded();
+
+
+
+
+            /**
             * Computes DH key Agreement and sends public key to client
             **/ 
             Key_Agreement_DH dh_agreement= new Key_Agreement_DH();
-            dh_agreement.genParams("manual");
-            byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
+           // dh_agreement.genParams("manual");
+            //byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
+            
             out.writeInt(pubSelf.length);
             out.write(pubSelf);
+
+            //Sends certificate
+            String myCertPath = "./introx509/certs/server_cert.pem";
+            byte[] certb= myCertPath.getBytes();
+
+            out.writeInt(certb.length);
+            out.write(certb);
 
 
             /**
@@ -89,6 +113,19 @@ class ReadMessage implements Runnable {
             **/
             byte[] pubClient = new byte[in.readInt()];
             in.readFully(pubClient);
+
+            //reads cert from client
+            byte[] clientcert = new byte[in.readInt()];
+            in.readFully(clientcert);
+            String clientCertPath = new String(clientcert, "UTF-8");
+
+            //MyValidCertPath certValid= new MyValidCertPath();
+            //certValid.validate("./introx509/certs/cacert.pem", clientCertPath)
+            
+            System.out.println("Certificate path is "+ clientCertPath);
+
+
+            
 
             /**
             *Generating RSA keys
@@ -142,7 +179,7 @@ class ReadMessage implements Runnable {
     		*
     		*ka.generateSecret() generates the shared secret between two parties
     		*/
-    		byte[] sessionKeyBytes = dh_agreement.keyAgreement(pubClient);
+    		byte[] sessionKeyBytes = dh_agreement.keyAgreement(pubClient, myPrivateKey);
 
     		/**
     		* Decipher mode with agreed key from diffie hellman
