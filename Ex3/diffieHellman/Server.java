@@ -72,6 +72,13 @@ class ReadMessage implements Runnable {
 
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             DataInputStream in = new DataInputStream(client.getInputStream());
+            
+            /**
+            * Gets public key from client
+            **/
+            byte[] pubClient = new byte[in.readInt()];
+            in.readFully(pubClient);
+
                 
             /**
             * Computes DH key Agreement and sends public key to client
@@ -81,13 +88,6 @@ class ReadMessage implements Runnable {
             byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
             out.writeInt(pubSelf.length);
             out.write(pubSelf);
-
-
-            /**
-            * Gets public key from client
-            **/
-            byte[] pubClient = new byte[in.readInt()];
-            in.readFully(pubClient);
 
             /**
             *Generating RSA keys

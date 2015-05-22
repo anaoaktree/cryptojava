@@ -1,4 +1,4 @@
-
+//package diffieHellman;
 /**
  *
  * @author Ana Paula Carvalho and Fábio Fernandes
@@ -49,17 +49,6 @@ public class Key_Agreement_DH {
     public PublicKey getPublicKey(){ return  this.keyPair.getPublic();}
     public PrivateKey getPrivateKey(){ return  this.keyPair.getPrivate();}
 
-
-
-    public PublicKey decodeX509(byte[] keyBytes){
-        try{
-        KeyFactory kf = KeyFactory.getInstance("DH");
-        X509EncodedKeySpec x509Spec = new X509EncodedKeySpec(keyBytes);
-        return kf.generatePublic(x509Spec);
-    } catch (Exception e) {System.out.println(e);return null;}
-
-    }
-
     /*
     * Performs the KeyAgreement
     */
@@ -85,13 +74,15 @@ public class Key_Agreement_DH {
                 AlgorithmParameters params= pgen.generateParameters();
                 dhspec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
             }
+            //For manual params defined in this.bigp or this.bigg
             else{
                 dhspec = new DHParameterSpec(this.bigp,this.bigg);
             }
             KeyPairGenerator keypairGen = KeyPairGenerator.getInstance("DH");
             keypairGen.initialize(dhspec);
             this.keyPair= keypairGen.generateKeyPair();
-            PublicKey publickey = keyPair.getPublic();
+
+            //resets the params in case it is auto
             this.bigp = dhspec.getP();
             this.bigg = dhspec.getG();
             this.intl = dhspec.getL();

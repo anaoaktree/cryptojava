@@ -1,3 +1,4 @@
+//package diffieHellman;
 
 /**
  *
@@ -59,21 +60,25 @@ public class Client {
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
             
             /**
-            * Computes DH key Agreement and sends public key to client
+            * Computes DH key Agreement and generates DH parameters.
+            * Also, it creates a key pair based on the parameters
             **/ 
             Key_Agreement_DH dh_agreement= new Key_Agreement_DH();
-            dh_agreement.genParams("manual");
+            dh_agreement.genParams("manual"); //for auto, we needed a central authority to share it also with server
+            
+            //Gets the public key generated earlier
             byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
+
+            //Sends public key to Server
             out.writeInt(pubSelf.length);
             out.write(pubSelf);
+//--------------------------------------------------------------------
 
             /**
             * Gets public key from server
             **/
             byte[] pubServer = new byte[in.readInt()];
             in.readFully(pubServer);
-
-
 
             /***
             *Reads and generates RSA key pair
