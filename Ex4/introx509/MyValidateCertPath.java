@@ -23,6 +23,7 @@ import java.util.*;
 
 
 public class MyValidateCertPath {
+    
     public Boolean validate(String trustAnchor,String certPath) throws Exception{
         PKIXParameters params = createParams(trustAnchor);
         try{

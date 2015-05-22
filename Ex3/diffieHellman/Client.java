@@ -1,4 +1,4 @@
-//package diffieHellman;
+package diffieHellman;
 
 /**
  *
@@ -19,8 +19,9 @@ import java.security.spec.*; /*InvalidParameterSpecException; InvalidKeySpecExce
 
 import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGenerator; SecretKey */
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
-
-
+import javax.crypto.interfaces.*;
+import diffieHellman.*;
+import com.sun.crypto.provider.SunJCE;
 
 public class Client {
 
@@ -63,71 +64,52 @@ public class Client {
             * Computes DH key Agreement and generates DH parameters.
             * Also, it creates a key pair based on the parameters
             **/ 
-            Key_Agreement_DH dh_agreement= new Key_Agreement_DH();
-            dh_agreement.genParams("manual"); //for auto, we needed a central authority to share it also with server
+            Utilities ut=new Utilities();
+            System.out.println("Computing DH parameters...");
+
+            DiffieHellman dh= new DiffieHellman();
+            dh.genParamsFull("manual"); //for auto, we needed a central authority to share it also with server
             
             //Gets the public key generated earlier
-            byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
+            byte[] pubSelf = dh.getPublicKey().getEncoded();
 
             //Sends public key to Server
+            System.out.println("Sending public key to server");
+
             out.writeInt(pubSelf.length);
             out.write(pubSelf);
-//--------------------------------------------------------------------
-
+            
             /**
             * Gets public key from server
             **/
+            System.out.println("Getting public key from server");
+
             byte[] pubServer = new byte[in.readInt()];
             in.readFully(pubServer);
 
-            /***
-            *Reads and generates RSA key pair
-            **/
-            byte[] modulo = new byte[in.readInt()];
-            in.readFully(modulo);
-            BigInteger bigmod = new BigInteger(modulo);
-
-            byte[] pubexp = new byte[in.readInt()];
-            in.readFully(pubexp);
-            BigInteger bigexp = new BigInteger(pubexp);
-
-            byte[] pubserver = new byte[in.readInt()];
-            in.readFully(pubserver);
-
-            RSAPrivateKeySpec rsaPrivateKey = new RSAPrivateKeySpec(bigmod,bigexp);
-            RSAPublicKeySpec rsaPubKey = new RSAPublicKeySpec(bigmod,bigexp);
-            PublicKey pubKey = KeyFactory.getInstance("RSA").generatePublic(rsaPubKey);
-
-
-            out.writeInt(pubKey.getEncoded().length);
-            out.write(pubKey.getEncoded());
-
-
-
             /**
-            *
-            *ka.generateSecret() generates the shared secret between two parties
+            * Proceeds with the key agreement: initializes with its private key
+            *  adds the public key from the server and then generates the secret, which is returned.
             */
-            byte[] sessionKeyBytes = dh_agreement.keyAgreement(pubServer);
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            sessionKeyBytes=sha.digest(sessionKeyBytes);
-            sessionKeyBytes=Arrays.copyOf(sessionKeyBytes,16);
+            System.out.println("Computing shared secret");
+            PublicKey serverPubKey= ut.decodeX509(pubServer);
+            byte[] sharedSecret=dh.keyAgreement(dh.getPrivateKey(),serverPubKey);
 
-            /**
-            * Creates a new cipher from key keyfile
-            * Getting IV from Server
-            **/
-            byte[] iv = new byte[16];
-            in.readFully(iv);
-
-            Encrypt enc = new Encrypt();
-            Cipher cipher = enc.encrypt(mode,sessionKeyBytes,iv);
+//--------------------------------------------------------------------
+            //Return the shared secret as the secret key, specifying the algorithm.
+         
+             /*
+         * Client encrypts, using DES in ECB mode
+         */
+            SecretKey secrKey = dh.sharedSecretKey(serverPubKey,"DES");
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secrKey);
 
             OutputStream os = s.getOutputStream();
             CipherOutputStream cos = new CipherOutputStream(os,cipher); 
 
             System.out.println("Connected to server");
-            System.out.println("Mode: "+mode);                
+            //System.out.println("Mode: "+mode);                
             System.out.println("You can start typing now!\n");
                 
             while((test=System.in.read())!=-1){
@@ -140,6 +122,8 @@ public class Client {
         }catch(Exception e){
             System.out.println("*** Failed to connect to server ***");
         }
+
+        
     }
 }
 
