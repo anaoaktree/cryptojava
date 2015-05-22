@@ -19,7 +19,10 @@ import java.security.spec.*; /*InvalidParameterSpecException; InvalidKeySpecExce
 
 import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGenerator; SecretKey */
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
- import java.security.interfaces.RSAPrivateCrtKey;
+
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPrivateCrtKey;
+
 import introx509.MyValidateCertPath;
 
 /**
@@ -81,7 +84,7 @@ class ReadMessage implements Runnable {
             byte[] encKey= Files.readAllBytes(Paths.get("./introx509/certs/server_key.pk8"));
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encKey);
             KeyFactory kfact = KeyFactory.getInstance("RSA");
-            PrivateKey myPrivateKey = kfact.generatePrivate(keySpec);
+            RSAPrivateKey myPrivateKey = (RSAPrivateKey)kfact.generatePrivate(keySpec);
             RSAPrivateCrtKey privk = (RSAPrivateCrtKey)myPrivateKey;
             RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(privk.getModulus(), privk.getPublicExponent());
             PublicKey pubSelf1 = kfact.generatePublic(publicKeySpec);
@@ -119,8 +122,8 @@ class ReadMessage implements Runnable {
             in.readFully(clientcert);
             String clientCertPath = new String(clientcert, "UTF-8");
 
-            //MyValidCertPath certValid= new MyValidCertPath();
-            //certValid.validate("./introx509/certs/cacert.pem", clientCertPath)
+            MyValidateCertPath certValid= new MyValidateCertPath();
+            certValid.validate("./introx509/certs/cacert.pem", clientCertPath);
             
             System.out.println("Certificate path is "+ clientCertPath);
 
@@ -141,6 +144,8 @@ class ReadMessage implements Runnable {
             //Sends modulus and public exponent to client
             byte[] mod=pub.getModulus().toByteArray();
             byte[] pubexp=pub.getPublicExponent().toByteArray();
+            
+            System.out.println("Done rsa keys ");
 
 
             out.writeInt(mod.length);
@@ -162,6 +167,8 @@ class ReadMessage implements Runnable {
             out.writeInt(sig.length);
             out.write(sig);
 
+            System.out.println("Done Dig sig ");
+
         
            /** Devia funcionar! exemplo em http://www.programcreek.com/java-api-examples/index.php?api=java.security.KeyFactory
 
@@ -180,6 +187,8 @@ class ReadMessage implements Runnable {
     		*ka.generateSecret() generates the shared secret between two parties
     		*/
     		byte[] sessionKeyBytes = dh_agreement.keyAgreement(pubClient, myPrivateKey);
+            System.out.println("Done key agreement ");
+
 
     		/**
     		* Decipher mode with agreed key from diffie hellman

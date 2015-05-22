@@ -21,7 +21,12 @@ import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGene
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
 
 import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.interfaces.RSAPrivateKey;
+
+
 import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+
 
 import introx509.MyValidateCertPath;
 
@@ -67,11 +72,12 @@ public class Client {
             byte[] encKey= Files.readAllBytes(Paths.get("./introx509/certs/client_key.pk8"));
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encKey);
             KeyFactory kfact = KeyFactory.getInstance("RSA");
-            PrivateKey myPrivateKey = kfact.generatePrivate(keySpec);
+            RSAPrivateKey myPrivateKey = (RSAPrivateKey)kfact.generatePrivate(keySpec);
             RSAPrivateCrtKey privk = (RSAPrivateCrtKey)myPrivateKey;
             RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(privk.getModulus(), privk.getPublicExponent());
             PublicKey pubSelf1 = kfact.generatePublic(publicKeySpec);
             byte[] pubSelf=pubSelf1.getEncoded();
+
 
             
 
@@ -104,8 +110,8 @@ public class Client {
 
             String serverCertPath = new String(servercert, "UTF-8");
 
-            //MyValidCertPath certValid= new MyValidCertPath();
-            //certValid.validate("./introx509/certs/cacert.pem", serverCertPath)
+            MyValidateCertPath certValid= new MyValidateCertPath();
+            certValid.validate("./introx509/certs/cacert.pem", serverCertPath);
             System.out.println("Certificate path is "+ serverCertPath);
 
             //Sends certificate
