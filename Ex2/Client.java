@@ -107,7 +107,7 @@ class Encrypt{
             Files.write(piv,iv);
 
             //KEY
-            Path kp=Paths.get("../Rc4/chave");
+            Path kp=Paths.get("chave");
             byte[] keyfile= Files.readAllBytes(kp);
             SecretKey key;
             if(mode.startsWith("AES")){
