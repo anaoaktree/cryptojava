@@ -1,4 +1,4 @@
-package secure_channel;
+package stationtostation;
 
 /**
  *
@@ -19,25 +19,41 @@ import java.security.spec.*; /*InvalidParameterSpecException; InvalidKeySpecExce
 
 import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGenerator; SecretKey */
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
+import javax.crypto.interfaces.*;
+import com.sun.crypto.provider.SunJCE;
+
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.interfaces.RSAPrivateKey;
+
+
+import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 
 
 
 public class Client {
 
+     public static PublicKey decodeX509(byte[] keyBytes){
+        try{
+        KeyFactory kf = KeyFactory.getInstance("DH");
+        X509EncodedKeySpec x509Spec = new X509EncodedKeySpec(keyBytes);
+        return kf.generatePublic(x509Spec);
+    } 
+    catch (Exception err) {System.out.println(err);return null;}
+
+    }
+
+
     public static void main(String args[])
     {
-        
-        /*Initialize Supported Ciphers*/
-        SupportedCiphers supportedCiphers = new SupportedCiphers();
-        supportedCiphers.initialize(supportedCiphers);
+              
 
         Socket s;
         String mode = "";
         if (args.length > 0){
-            mode = supportedCiphers.getCipher(args[0]);
             if(mode.length() < 1){
                 System.out.println("Wrong cipher identifier!");
-                System.out.println(supportedCiphers.getSupportedCiphers());
+                //System.out.println(supportedCiphers.getSupportedCiphers());
                 mode = "RC4";
             }
         }
@@ -58,82 +74,107 @@ public class Client {
 
             DataInputStream in = new DataInputStream(s.getInputStream());
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
-            
+            //ObjectInputStream obin = new ObjectInputStream(s.getInputStream());
+            //ObjectOutputStream obout = new ObjectOutputStream(s.getOutputStream());
             /**
-            * Computes DH key Agreement and sends public key to client
+            * Computes DH key Agreement and generates DH parameters.
+            * Also, it creates a key pair based on the parameters
             **/ 
-            Key_Agreement_DH dh_agreement= new Key_Agreement_DH();
-            dh_agreement.genParams("manual");
-            byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
+            System.out.println("Computing DH parameters...");
+
+            DiffieHellman dh= new DiffieHellman();
+            dh.genParamsFull("manual"); //for auto, we needed a central authority to share it also with server
+            
+            //Gets the public key generated earlier
+            byte[] pubSelf = dh.getPublicKey().getEncoded();
+
+            //Sends public key to Server
+            System.out.println("Sending public key to server");
+
             out.writeInt(pubSelf.length);
             out.write(pubSelf);
-
+            
             /**
             * Gets public key from server
             **/
+            System.out.println("Getting public key from server");
+
             byte[] pubServer = new byte[in.readInt()];
             in.readFully(pubServer);
 
-
-
-            /***
-            *Reads and generates RSA key pair
-            **/
-            byte[] modulo = new byte[in.readInt()];
-            in.readFully(modulo);
-            BigInteger bigmod = new BigInteger(modulo);
-
-            byte[] pubexp = new byte[in.readInt()];
-            in.readFully(pubexp);
-            BigInteger bigexp = new BigInteger(pubexp);
-
-            byte[] pubserver = new byte[in.readInt()];
-            in.readFully(pubserver);
-
-            RSAPrivateKeySpec rsaPrivateKey = new RSAPrivateKeySpec(bigmod,bigexp);
-            RSAPublicKeySpec rsaPubKey = new RSAPublicKeySpec(bigmod,bigexp);
-            PublicKey pubKey = KeyFactory.getInstance("RSA").generatePublic(rsaPubKey);
-
-
-            out.writeInt(pubKey.getEncoded().length);
-            out.write(pubKey.getEncoded());
-
-
             /**
-            * Gets dig sig from server and verifies it
-            **/
-            byte[] dig = new byte[in.readInt()];
-            in.readFully(dig);
-
-            StationtoStation digsig= new StationtoStation();
-            Boolean t= digsig.verify(dig, pubKey, pubserver);
-            System.out.println("DIG verif: " + t);
-
-
-            /**
-            *
-            *ka.generateSecret() generates the shared secret between two parties
+            * Proceeds with the key agreement: initializes with its private key
+            *  adds the public key from the server and then generates the secret, which is returned.
             */
-            byte[] sessionKeyBytes = dh_agreement.keyAgreement(pubServer);
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            sessionKeyBytes=sha.digest(sessionKeyBytes);
-            sessionKeyBytes=Arrays.copyOf(sessionKeyBytes,16);
+            System.out.println("Computing shared secret");
+            PublicKey serverPubKey= decodeX509(pubServer);
+            PrivateKey myPrivateKey = dh.getPrivateKey();
+            byte[] sharedSecret=dh.keyAgreement(myPrivateKey,serverPubKey);
 
-            /**
-            * Creates a new cipher from key keyfile
-            * Getting IV from Server
-            **/
-            byte[] iv = new byte[16];
-            in.readFully(iv);
+//--------------------------------------------------------------------
+            //Return the shared secret as the secret key, specifying the algorithm.
+         
+             /*
+         * Client encrypts, using DES in ECB mode
+         */
+           
+        SecretKey secrKey = dh.sharedSecretKey(serverPubKey,"DES");
 
-            Encrypt enc = new Encrypt();
-            Cipher cipher = enc.encrypt(mode,sessionKeyBytes,iv);
+        
+
+    //--------STS----------------
+        //Generates RSA key pair
+        KeyPairGenerator rsaKeyPairGen = KeyPairGenerator.getInstance("RSA");
+        rsaKeyPairGen.initialize(1024);
+        KeyPair rsaKeyPair = rsaKeyPairGen.generateKeyPair();
+        RSAPrivateCrtKey rsapriv = (RSAPrivateCrtKey)rsaKeyPair.getPrivate();
+        RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(rsapriv.getModulus(), rsapriv.getPublicExponent());
+        KeyFactory kfact = KeyFactory.getInstance("RSA");
+        PublicKey rsaPubKey = kfact.generatePublic(publicKeySpec);
+        byte[] rsaPub=rsaPubKey.getEncoded();
+
+        //Sends pubkey and modulus to server
+
+        out.writeInt(rsapriv.getModulus().toByteArray().length);
+        out.write(rsapriv.getModulus().toByteArray());
+
+        out.writeInt(rsaPub.length);
+        out.write(rsaPub);
+
+        //receives from server
+         byte[] rsaPubServer = new byte[in.readInt()];
+         in.readFully(rsaPubServer);
+            
+
+         // Gerar número aleatório, calcular o expoente e 
+		// enviá-lo ao servidor
+
+        StationtoStation sts = new StationtoStation();
+        SealedObject ciphsign = sts.sign(rsaKeyPair.getPrivate(),rsaPub,rsaPubServer,secrKey);
+
+        byte[] ciphSign = ((Object)ciphsign).toByteArray();
+        out.writeInt(ciphSign.length);
+        out.write(ciphSign);
+
+
+
+        //obout.writeObject(ciphsign); //envia a assinatura cifrada para 
+
+
+        //enviar ao outro o sealed object
+        //iniciar uma cifra para decifrar a chave
+        // verificar a assinatura
+
+        //------------------STS
+
+        Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secrKey);
 
             OutputStream os = s.getOutputStream();
             CipherOutputStream cos = new CipherOutputStream(os,cipher); 
 
             System.out.println("Connected to server");
-            System.out.println("Mode: "+mode);                
+            //System.out.println("Mode: "+mode);                
             System.out.println("You can start typing now!\n");
                 
             while((test=System.in.read())!=-1){
@@ -146,6 +187,8 @@ public class Client {
         }catch(Exception e){
             System.out.println("*** Failed to connect to server ***");
         }
+
+        
     }
 }
 

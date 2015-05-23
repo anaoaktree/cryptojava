@@ -1,4 +1,4 @@
-
+package diffieHellman;
 /**
  *
  * @author Ana Paula Carvalho and Fábio Fernandes
@@ -18,7 +18,9 @@ import java.security.spec.*; /*InvalidParameterSpecException; InvalidKeySpecExce
 
 import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGenerator; SecretKey */
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
+import javax.crypto.interfaces.*;
 
+import diffieHellman.*;
 
 /**
  *
@@ -69,101 +71,70 @@ class ReadMessage implements Runnable {
             **/
             cipherMode = reader.readLine();  
             System.out.println("["+id+"]: Client connected with cipher "+cipherMode);       
+            
+            Utilities ut=new Utilities();
+            DiffieHellman dh= new DiffieHellman();
 
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             DataInputStream in = new DataInputStream(client.getInputStream());
-                
-            /**
-            * Computes DH key Agreement and sends public key to client
-            **/ 
-            Key_Agreement_DH dh_agreement= new Key_Agreement_DH();
-            dh_agreement.genParams("manual");
-            byte[] pubSelf = dh_agreement.getPublicKey().getEncoded();
-            out.writeInt(pubSelf.length);
-            out.write(pubSelf);
-
-
+            
             /**
             * Gets public key from client
             **/
+            System.out.println("Getting public key from client");
+
             byte[] pubClient = new byte[in.readInt()];
             in.readFully(pubClient);
 
+            //decodes clients key
+            PublicKey clientPubKey = ut.decodeX509(pubClient);
+
+            //creates his own dh pair with the same parameters as client
+            dh.genParamsSpec(((DHPublicKey)clientPubKey).getParams());
+
+            //Encodes public key and sends it to client
+            System.out.println("Sending public key to client");
+
+            byte[] pubSelf = dh.getPublicKey().getEncoded();
+            out.writeInt(pubSelf.length);
+            out.write(pubSelf);
+
             /**
-            *Generating RSA keys
+            * Proceeds with the key agreement: initializes with its private key
+            *  adds the public key from the server and then generates the secret, which is returned.
             */
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(2048);
-            KeyPair kp = kpg.genKeyPair();
-            PublicKey publicKey = kp.getPublic();
-            PrivateKey privateKey = kp.getPrivate();
-            KeyFactory fact = KeyFactory.getInstance("RSA");
-            RSAPublicKeySpec pub = fact.getKeySpec(publicKey, RSAPublicKeySpec.class);
-            RSAPrivateKeySpec priv = fact.getKeySpec(privateKey, RSAPrivateKeySpec.class);
-            //Sends modulus and public exponent to client
-            byte[] mod=pub.getModulus().toByteArray();
-            byte[] pubexp=pub.getPublicExponent().toByteArray();
+            System.out.println("Computing shared secret");
+
+            byte[] sharedSecret=dh.keyAgreement(dh.getPrivateKey(),clientPubKey);
 
 
-            out.writeInt(mod.length);
-            out.write(mod);
-            out.writeInt(pubexp.length);
-            out.write(pubexp);
-            out.writeInt(publicKey.getEncoded().length);
-            out.write(publicKey.getEncoded());
-             byte[] rsaClient = new byte[in.readInt()];
-            in.readFully(rsaClient);
+//-----------------------------------------------------------
 
 
-        
-           /** Devia funcionar! exemplo em http://www.programcreek.com/java-api-examples/index.php?api=java.security.KeyFactory
-
-            KeyFactory keyFactory=KeyFactory.getInstance("RSA");
-            PKCS8EncodedKeySpec pkeySpec =new PKCS8EncodedKeySpec(dh_agreement.getPrivateKey().getEncoded());
-            KeySpec kspec= (KeySpec) pkeySpec;
-            RSAPrivateCrtKey rsaPrivateKey=(RSAPrivateCrtKey) keyFactory.generatePrivate(kspec);
-            RSAPublicKeySpec publicKeySpec=new RSAPublicKeySpec(rsaPrivateKey.getModulus(),rsaPrivateKey.getPublicExponent());
-            PublicKey publicKey=keyFactory.generatePublic(publicKeySpec);
             
-
-*/
-
-    		/**
-    		*
-    		*ka.generateSecret() generates the shared secret between two parties
-    		*/
-    		byte[] sessionKeyBytes = dh_agreement.keyAgreement(pubClient);
-
-    		/**
-    		* Decipher mode with agreed key from diffie hellman
-    		*
-    		**/
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            sessionKeyBytes=sha.digest(sessionKeyBytes);
-            sessionKeyBytes=Arrays.copyOf(sessionKeyBytes,16);
-
-            /**
-            * Sends generated IV to client
-            *
-            **/
-            byte[] iv = new byte[16];
-            SecureRandom sr = new SecureRandom();
-            sr.nextBytes(iv);
-            out.write(iv);
+             /*
+         * Client encrypts, using DES in ECB mode
+         */
+            SecretKey secrKey = dh.sharedSecretKey(clientPubKey,"DES");
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secrKey);
+            System.out.println("Cipher initiated");
 
 
-            Decrypt dec = new Decrypt();
-            Cipher ciph=dec.decrypt(cipherMode, sessionKeyBytes, iv);
-            CipherInputStream cis = new CipherInputStream(this.client.getInputStream(),ciph);
+            CipherInputStream cis = new CipherInputStream(this.client.getInputStream(),cipher);
             int test;
             int inicio_mensagem = 1;
+            System.out.println(cis.read());
 
             while((test=cis.read())!=-1){
+
                if(inicio_mensagem == 1){
                          System.out.print("["+id+"]: ");
                          inicio_mensagem = 0;
                     }
+                    
                     System.out.print((char) test);
+
                     if((char) test == '\n'){
                         inicio_mensagem = 1;
                     } 

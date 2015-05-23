@@ -1,5 +1,4 @@
-package secure_channel;
-
+package stationtostation;
 /**
  *
  * @author Ana Paula Carvalho and Fábio Fernandes
@@ -18,7 +17,7 @@ import javax.crypto.spec.*;
 
 
 
-public class Key_Agreement_DH {
+public class DiffieHellman {
  
     	private String p="99494096650139337106186933977618513974146274831566768179581759037259788798151499814653951492724365471316253651463342255785311748602922458795201382445323499931625451272600173180136123245441204133515800495917242011863558721723303661523372572477211620144038809673692512025566673746993593384600667047373692203583";
     	private String g="44157404837960328768872680677686802650999163226766694797650810379076416463147265401084491113667624054557335394761604876882446924929840681990106974314935015501571333024773172440352475358750668213444607353872754650805031912866692119819377041901642732455911509867728218394542745330014071040326856846990119719675";
@@ -26,16 +25,17 @@ public class Key_Agreement_DH {
     	private BigInteger bigg = new BigInteger(g);
         private int intl= 0;
         private KeyPair keyPair;
+        private KeyAgreement ka;
         PublicKey otherParty;
 
-    public Key_Agreement_DH(){
+    public DiffieHellman(){
         this.bigp=bigp;
         this.bigg=bigg;
         this.intl=0;
         this.keyPair=null;
 
     }
-    public Key_Agreement_DH(BigInteger bigpman, BigInteger biggman, int intlman){
+    public DiffieHellman(BigInteger bigpman, BigInteger biggman, int intlman){
         this.bigp=bigpman;
         this.bigg=biggman;
         this.intl=intlman;
@@ -50,33 +50,29 @@ public class Key_Agreement_DH {
     public PublicKey getPublicKey(){ return  this.keyPair.getPublic();}
     public PrivateKey getPrivateKey(){ return  this.keyPair.getPrivate();}
 
-
-
-    public PublicKey decodeX509(byte[] keyBytes){
-        try{
-        KeyFactory kf = KeyFactory.getInstance("DH");
-        X509EncodedKeySpec x509Spec = new X509EncodedKeySpec(keyBytes);
-        return kf.generatePublic(x509Spec);
-    } catch (Exception e) {System.out.println(e);return null;}
-
-    }
-
     /*
     * Performs the KeyAgreement
     */
 
-    public byte[] keyAgreement(byte[] keyBytes){
+    public byte[] keyAgreement(PrivateKey privk, PublicKey pubk){
         try{
-            KeyAgreement ka = KeyAgreement.getInstance("DH");
-            ka.init(this.keyPair.getPrivate());
-            ka.doPhase(this.decodeX509(keyBytes),true);
+            ka.init(privk);
+            ka.doPhase(pubk,true);
             return ka.generateSecret();
         } catch (Exception e) {System.out.println(e);return null;}
 
     }
 
+    public SecretKey sharedSecretKey(PublicKey pubk, String alg){
+        try{
+            ka.doPhase(pubk,true);
+            return ka.generateSecret(alg);
+        } catch (Exception e) {System.out.println(e);return null;}
+
+    }
+
     
-    public void genParams(String mode){
+    public void genParamsFull(String mode){
         try{
         //Parameter Generator P,G,l
             AlgorithmParameterGenerator pgen = AlgorithmParameterGenerator.getInstance("DiffieHellman"); 
@@ -86,13 +82,27 @@ public class Key_Agreement_DH {
                 AlgorithmParameters params= pgen.generateParameters();
                 dhspec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
             }
+            //For manual params defined in this.bigp or this.bigg
             else{
                 dhspec = new DHParameterSpec(this.bigp,this.bigg);
             }
+            genParamsSpec(dhspec);
+        }
+        catch (Exception e) {System.out.println(e);}
+    }
+
+    /**
+    * Generates parameters from a parameter specification
+    *
+    */
+    public void genParamsSpec(DHParameterSpec dhspec){
+        try{
+            ka= KeyAgreement.getInstance("DH");
             KeyPairGenerator keypairGen = KeyPairGenerator.getInstance("DH");
             keypairGen.initialize(dhspec);
             this.keyPair= keypairGen.generateKeyPair();
-            PublicKey publickey = keyPair.getPublic();
+
+            //resets the params in case it is auto
             this.bigp = dhspec.getP();
             this.bigg = dhspec.getG();
             this.intl = dhspec.getL();
