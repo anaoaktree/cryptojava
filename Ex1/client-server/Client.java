@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +25,7 @@ public class Client {
                 in = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 out = new PrintWriter(s.getOutputStream());
                 
-                System.out.println("Connected to server");
+                System.out.println("Connected to server. You can start typing!");
                 
                 while(!(str.equals("exit")))
                 {
