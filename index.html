@@ -118,7 +118,9 @@
     
         <li class="main active"><a href="#trabalhos-praticos-de-seguranca-de-sistemas-informaticos">Trabalhos Práticos de Segurança de Sistemas Informáticos</a></li>
         
-            <li><a href="#ambito">Âmbito</a></li>
+            <li><a href="#download">Download</a></li>
+        
+            <li><a href="#introducao">Introdução</a></li>
         
             <li><a href="#ambiente-de-desenvolvimento">Ambiente de Desenvolvimento</a></li>
         
@@ -133,30 +135,45 @@
             <div class="col-md-9" role="main">
 
 <h1 id="trabalhos-praticos-de-seguranca-de-sistemas-informaticos">Trabalhos Práticos de Segurança de Sistemas Informáticos</h1>
-<p><strong>Por Ana Paula Carvalho pg25335 e Fábio Fernandes pg26119</strong></p>
-<p>Download do <strong>projeto completo</strong> em formato zip: <a href="https://github.com/anapmc/cryptojava/archive/master.zip">GitHub</a>.</p>
-<h2 id="ambito">Âmbito</h2>
-<p>Perfil Sistemas Distribuídos e Criptografia (SDC) - Mestrado em Eng. Informática (MEI)</p>
-<p>Universidade do Minho (UM)</p>
+<p>Projeto mantido no <a href="https://github.com/anapmc/cryptojava">Github</a> por :</p>
+<ul>
+<li><strong>Ana Paula Carvalho</strong> pg25335</li>
+<li><strong> Fábio Fernandes</strong> pg26119</li>
+</ul>
+<h3 id="download">Download</h3>
+<p><strong>Projeto completo</strong> em formato <a href="https://github.com/anapmc/cryptojava/archive/master.zip">zip</a>.</p>
+<h2 id="introducao">Introdução</h2>
+<p>Este projeto foi efetuado no âmbito do perfil Sistemas Distribuídos e Criptografia (SDC) - Mestrado em Eng. Informática (MEI) da Universidade do Minho (UM).</p>
+<p>O objetivo é ir percorrendo conceitos básicos de criptografia até aos mais avançados, partindo de cifras simples, passando por protocolos de acordos de chaves, MACs, assinaturas certificados digitais por forma a construir um meio de comunicação segura do tipo TLS/SSL usados atualmente nas comunicações</p>
 <h2 id="ambiente-de-desenvolvimento">Ambiente de Desenvolvimento</h2>
 <ul>
 <li>
 <p><strong>Programação em Java</strong> -  fazendo uso da JCA/JCE (<em>Java Cryptography Architecture</em>/<em>Java Cryptography Extension</em>)</p>
 </li>
 <li>
-<p><strong>Aplicação Cliente-Servidor</strong></p>
+<p><strong>Aplicação Cliente-Servidor</strong> - Este projeto baseia-se na comunicação segura entre duas entidades (um cliente e um servidor) que trocam mensagens entre si.</p>
 </li>
 </ul>
 <h2 id="organizacao-do-projeto">Organização do Projeto</h2>
-<pre><code>aula1/    
-aula2/
-    index.md  # The documentation homepage.
-    ...       # Other markdown pages, images and other files.
+<pre><code>Ex1/
+    arc4/           # Cifra de ficheiro Rc4 - implementação própria
+    client-server/  # Comunicação cliente-servidor simples
+    rc4/            # Cifra de ficheiro RC4 - JCA
+Ex2/    Confidencialidade cliente-servidor
+Ex3/
+    diffieHellman/  # Acordo de chaves Diffie-Hellman
+    mac/            # Message Authentication Codes
+Ex4/
+    stationtostation/   # Protocolo Station to Station
+    introx509/          # Utilização de certificados X.509 - Java
+Ex5/    # Geração de certificados X.509 - openssl
+Ex6/    # Protocolo TLS/SSL
 </code></pre>
 <h1 id="referencias">Referências</h1>
 <ul>
 <li><a href="http://www.java2s.com/Code/Java/Security/CatalogSecurity.htm">java2s - Security</a></li>
-<li><a href="http://en.wikipedia.org/wiki/RC4">JCA/JCE - J. Bacelar Almeida DI/Uminho 2008/2009</a></li>
+<li><a href="http://twiki.di.uminho.pt/twiki/pub/Education/Criptografia/CriptografiaBiomedica0809/mod2-2up.pdf">JCA/JCE - J. Bacelar Almeida DI/Uminho 2008/2009</a></li>
+<li><a href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/">Java Security Guides</a></li>
 </ul></div>
         </div>
 

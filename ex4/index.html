@@ -125,6 +125,8 @@
         
             <li><a href="#obter-certificados-e-chaves-privs-pubk-do-servidor-priv-servidor-pub-cliente-priv-cliente-autoridade-de-certificacao-programa-java-para-validacao">Obter certificados e chaves privs pubk do servidor, priv servidor, pub cliente, priv cliente autoridade de certificação; Programa Java para validação</a></li>
         
+            <li><a href="#atualizar-cliente-e-servidor">Atualizar Cliente e Servidor</a></li>
+        
     
         <li class="main "><a href="#referencias">Referências</a></li>
         
@@ -135,17 +137,20 @@
 
 <h1 id="41-station-to-station">4.1 - Station-to-Station</h1>
 <h3 id="get-java-station-to-station-client-server-dh-key-agreement-encrypt-decrypt-and-supported-ciphers">Get Java <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/station-to-station/StationtoStation.java">Station-to-Station</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/station-to-station/Client.java">Client</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/station-to-station/Server.java">Server</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/station-to-station/Key_Agreement_DH.java">DH key agreement</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/station-to-station/Encrypt.java">Encrypt</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/station-to-station/Decrypt.java">Decrypt</a> and <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/station-to-station/SupportedCiphers.java">Supported Ciphers</a></h3>
-<p>A utilização é a mesma dos exercícios anteriores, inicializar a aplicação cliente-servidor e trocar mensagens. O Station-to-Station complementa o DH no sentido em que há uma troca de assinaturas....</p>
+<p>A utilização é a mesma dos exercícios anteriores, inicializar a aplicação cliente-servidor e trocar mensagens. O Station-to-Station complementa o DH no sentido em que há uma troca de assinaturas....
+A digital signature or digital signature scheme is a mathematical scheme for demonstrating the authenticity of a digital message or document. A valid digital signature gives a recipient reason to believe that the message was created by a known sender, and that it was not altered in transit. Digital signatures are commonly used for software distribution, financial transactions, and in other cases where it is important to detect forgery and tampering.</p>
 <h1 id="42-using-x509-certificates">4.2 - Using X509 certificates</h1>
 <p>As chaves públicas do protocolo Station-to-station necessitam de ser certificadas por autoridades de confiança (CA). Neste exercício vamos basear-nos em certificados X509.</p>
-<h3 id="obter-certificados-e-chaves-privs-pubk-do-servidor-priv-servidor-pub-cliente-priv-cliente-autoridade-de-certificacao-programa-java-para-validacao">Obter certificados e chaves privs <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro-x509/certs/server_cert.pem">pubk do servidor</a>, <a href="https://github.com/anapmc/cryptojava/blob/master/Ex4/intro-x509/certs/server_key.pk8?raw=true">priv servidor</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro-x509/certs/client_cert.pem">pub cliente</a>, <a href="https://github.com/anapmc/cryptojava/blob/master/Ex4/intro-x509/certs/client_key.pk8?raw=true">priv client</a>e <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro-x509/certs/cacert.pem">autoridade de certificação</a>; Programa Java para <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro-x509/ValidateCertPath.java">validação</a></h3>
+<h3 id="obter-certificados-e-chaves-privs-pubk-do-servidor-priv-servidor-pub-cliente-priv-cliente-autoridade-de-certificacao-programa-java-para-validacao">Obter certificados e chaves privs <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro509/certs/server_cert.pem">pubk do servidor</a>, <a href="https://github.com/anapmc/cryptojava/blob/master/Ex4/intro509/certs/server_key.pk8?raw=true">priv servidor</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro509/certs/client_cert.pem">pub cliente</a>, <a href="https://github.com/anapmc/cryptojava/blob/master/Ex4/intro509/certs/client_key.pk8?raw=true">priv client</a>e <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro509/certs/cacert.pem">autoridade de certificação</a>; Programa Java para <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro509/ValidateCertPath.java">validação</a></h3>
 <ol>
 <li>Após compilar, correr <code>java ValidateCertPath cacert.pem server_cert.pem</code> para verificar a validade do servidor ou <code>java ValidateCertPath cacert.pem client_cert.pem</code> para verificar a validade do cliente.</li>
 </ol>
-<p>Continua....</p>
+<h3 id="atualizar-cliente-e-servidor">Atualizar <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro509/Client.java">Cliente</a> e <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex4/intro509/Server.java">Servidor</a></h3>
+<p>Por forma a utilizarem as chaves privadas referênciadas acima.</p>
 <h1 id="referencias">Referências</h1>
 <ul>
 <li><a href="http://en.wikipedia.org/wiki/Station-to-Station_protocol">Station-to-Station - wikipedia</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Public_key_certificate">Public key certificate - wikipedia</a></li>
 <li><a href="http://en.wikipedia.org/wiki/X.509">X509 - wikipedia</a></li>
 <li><a href="http://docs.oracle.com/javase/6/docs/technotes/guides/security/certpath/CertPathProgGuide.html">Java Certification Path API Programmer's Guide</a></li>
 <li><a href="http://wiki.di.uminho.pt/twiki/pub/Education/Criptografia/CriptografiaMestrados0607/MSDPA-JCA-Rui-RelDaApre.pdf">JCA -  Rui Manuel Coimbra Oliveira Afonseca - UMinho 2006/2007 </a></li>

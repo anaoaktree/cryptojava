@@ -137,6 +137,8 @@
 <p>Há um problema com o tamanho da chave gerada! Verificar as diferentes cifras e iv.</p>
 <h3 id="get-java-client-server-dh-key-agreement-encrypt-decrypt-and-supported-ciphers">Get Java <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex3/diffie-hellman/Client.java">Client</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex3/diffie-hellman/Server.java">Server</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex3/diffie-hellman/Key_Agreement_DH.java">DH key agreement</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex3/diffie-hellman/Encrypt.java">Encrypt</a>, <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex3/diffie-hellman/Decrypt.java">Decrypt</a> and <a href="https://raw.githubusercontent.com/anapmc/cryptojava/master/Ex3/diffie-hellman/SupportedCiphers.java">Supported Ciphers</a></h3>
 <p>A utilização é a mesma dos exercícios anteriores, inicializar a aplicação cliente-servidor e trocar mensagens. Agora, em vez de ser utilizada uma chave definida pelo programador, cliente e servidor vão acordar com qual chave cifrar/decifrar as mensagens, através do protocolo Diffie-Hellman. Isto permite...</p>
+<p>Está a funcionar com o  DES : falta suporte para geral.
+E calculos à mão, pow(), mod() etc.</p>
 <h1 id="32-channel-authentication-message-authentication-codes-macs">3.2 - Channel Authentication - Message Authentication Codes (MACs)</h1>
 <h3 id="get-the-same-code-as-above-except">Get the same code as above except ....</h3>
 <p>Autenticar as mensagens cifradas garante integridade (que a mensagem chegou sem ser modificada) e autenticidade (a mensagem vem do emissor pretendido).
@@ -144,6 +146,7 @@ Para tal, são usadas funções de Hash Criptográficas (ex. SHA1)</p>
 <h1 id="referencias">Referências</h1>
 <ul>
 <li><a href="http://en.wikipedia.org/wiki/Diffie-Hellman">DH - wikipedia</a></li>
+<li><a href="http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/what-is-diffie-hellman.htm">DH - RSA labs</a></li>
 <li><a href="http://en.wikipedia.org/wiki/Message_authentication_code">MAC - wikipedia</a></li>
 <li><a href="http://en.wikipedia.org/wiki/SHA-1">SHA-1 - wikipedia</a></li>
 </ul></div>
