@@ -152,7 +152,12 @@ public class Client {
         StationtoStation sts = new StationtoStation();
         SealedObject ciphsign = sts.sign(rsaKeyPair.getPrivate(),rsaPub,rsaPubServer,secrKey);
 
-        byte[] ciphSign = ((Object)ciphsign).toByteArray();
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        ObjectOutputStream o = new ObjectOutputStream(b);
+        o.writeObject(ciphsign);
+        byte[] ciphSign = b.toByteArray();
+
+        //byte[] ciphSign = ((Object)ciphsign).toByteArray();
         out.writeInt(ciphSign.length);
         out.write(ciphSign);
 
