@@ -1,4 +1,4 @@
-package diffieHellman;
+package mac;
 
 import java.util.*; /* Scanner; */
 import java.util.function.Consumer;

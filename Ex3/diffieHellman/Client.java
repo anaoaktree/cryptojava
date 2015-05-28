@@ -29,16 +29,16 @@ public class Client {
     {
         
         /*Initialize Supported Ciphers*/
-        SupportedCiphers supportedCiphers = new SupportedCiphers();
-        supportedCiphers.initialize(supportedCiphers);
+        //SupportedCiphers supportedCiphers = new SupportedCiphers();
+        //supportedCiphers.initialize(supportedCiphers);
 
         Socket s;
         String mode = "";
         if (args.length > 0){
-            mode = supportedCiphers.getCipher(args[0]);
+            //mode = supportedCiphers.getCipher(args[0]);
             if(mode.length() < 1){
                 System.out.println("Wrong cipher identifier!");
-                System.out.println(supportedCiphers.getSupportedCiphers());
+                //System.out.println(supportedCiphers.getSupportedCiphers());
                 mode = "RC4";
             }
         }

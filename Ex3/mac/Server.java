@@ -1,4 +1,4 @@
-package diffieHellman;
+package mac;
 /**
  *
  * @author Ana Paula Carvalho and Fábio Fernandes
@@ -20,7 +20,7 @@ import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGene
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
 import javax.crypto.interfaces.*;
 
-import diffieHellman.*;
+import mac.*;
 
 /**
  *
@@ -60,6 +60,8 @@ class ReadMessage implements Runnable {
     }
 
     public void run() {
+        Encryption encryption = new Encryption();
+        SupportedCiphers sup = new SupportedCiphers();
         Boolean firstTime=true;
     	String cipherMode="";
         try {
@@ -111,34 +113,42 @@ class ReadMessage implements Runnable {
 //-----------------------------------------------------------
 
 
-            
-             /*
-         * Client encrypts, using DES in ECB mode
-         */
-            SecretKey secrKey = dh.sharedSecretKey(clientPubKey,"DES");
-            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, secrKey);
+            byte[] secrKey= Arrays.copyOfRange(sharedSecret, 0, 16);
+            byte[] macKey = Arrays.copyOfRange(sharedSecret, 16, sharedSecret.length);
+
+            Cipher cipher = encryption.encrypt(cipherMode,secrKey);
+
+            //------------------MAC
+            Mac mac = encryption.digest(macKey,cipherMode);
+
+
+           //------------------MAC */
+
             System.out.println("Cipher initiated");
 
 
             CipherInputStream cis = new CipherInputStream(this.client.getInputStream(),cipher);
             int test;
             int inicio_mensagem = 1;
-            System.out.println(cis.read());
 
             while((test=cis.read())!=-1){
+                byte[] msg = new byte[test];
+                cis.read(msg);
+                System.out.print("["+id+"]: " + new String(msg)+ "\n");
 
-               if(inicio_mensagem == 1){
-                         System.out.print("["+id+"]: ");
-                         inicio_mensagem = 0;
-                    }
-                    
-                    System.out.print((char) test);
+                byte[] digestServer = mac.doFinal(msg);
+                int digestSize = cis.read();
+                byte[] digestClient = new byte[digestSize];
+                cis.read(digestClient);
 
-                    if((char) test == '\n'){
-                        inicio_mensagem = 1;
-                    } 
+                 if (!java.util.Arrays.equals(digestServer, digestClient))
+                    throw new Exception("Digest differ");
+
             }
+
+
+                 
+            
             System.out.println("["+id+"]: "+"Client disconnected");
     	} catch (Exception e) {System.out.println(e);}
     }

@@ -1,4 +1,4 @@
-package diffieHellman;
+package mac;
 
 /**
  *
@@ -20,25 +20,24 @@ import java.security.spec.*; /*InvalidParameterSpecException; InvalidKeySpecExce
 import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGenerator; SecretKey */
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
 import javax.crypto.interfaces.*;
-import diffieHellman.*;
+//import mac.*;
 import com.sun.crypto.provider.SunJCE;
 
 public class Client {
 
     public static void main(String args[])
     {
+        Encryption encryption = new Encryption();
+        SupportedCiphers sup = new SupportedCiphers();
         
         /*Initialize Supported Ciphers*/
-        SupportedCiphers supportedCiphers = new SupportedCiphers();
-        supportedCiphers.initialize(supportedCiphers);
-
         Socket s;
         String mode = "";
         if (args.length > 0){
-            mode = supportedCiphers.getCipher(args[0]);
+            mode = sup.getCipher(args[0]);
             if(mode.length() < 1){
                 System.out.println("Wrong cipher identifier!");
-                System.out.println(supportedCiphers.getSupportedCiphers());
+                System.out.println(sup.getSupportedCiphers());
                 mode = "RC4";
             }
         }
@@ -46,7 +45,6 @@ public class Client {
             mode = "RC4";
         }
 
-        int test;
         try{
             s = new Socket("localhost", 4567);
             PrintWriter writer = new PrintWriter(s.getOutputStream());
@@ -98,23 +96,40 @@ public class Client {
 //--------------------------------------------------------------------
             //Return the shared secret as the secret key, specifying the algorithm.
          
-             /*
-         * Client encrypts, using DES in ECB mode
-         */
-            SecretKey secrKey = dh.sharedSecretKey(serverPubKey,"DES");
-            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secrKey);
+            byte[] secrKey= Arrays.copyOfRange(sharedSecret, 0, 16);
+            byte[] macKey = Arrays.copyOfRange(sharedSecret, 16, sharedSecret.length);
+
+         
+
+            //------------------MAC
+            Mac mac = encryption.digest(macKey,mode);
+
+
+           //------------------MAC */
+
+            Cipher cipher = encryption.encrypt(mode,secrKey);
+
 
             OutputStream os = s.getOutputStream();
             CipherOutputStream cos = new CipherOutputStream(os,cipher); 
+            CipherInputStream cis = new CipherInputStream(s.getInputStream(), cipher);
+
 
             System.out.println("Connected to server");
             //System.out.println("Mode: "+mode);                
             System.out.println("You can start typing now!\n");
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+            String test;
+            while((test=br.readLine())!=null){
+                cos.write(test.length());
+                cos.write(test.getBytes());
                 
-            while((test=System.in.read())!=-1){
-                cos.write((byte)test);
-                cos.flush();
+
+                byte[] msgDigest = mac.doFinal(test.getBytes());
+                cos.write(msgDigest.length);
+                cos.write(msgDigest);
+
             }
             in.close();
             out.close();

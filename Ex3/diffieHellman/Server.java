@@ -124,7 +124,7 @@ class ReadMessage implements Runnable {
             CipherInputStream cis = new CipherInputStream(this.client.getInputStream(),cipher);
             int test;
             int inicio_mensagem = 1;
-            System.out.println(cis.read());
+            //System.out.println(cis.read());
 
             while((test=cis.read())!=-1){
 
@@ -133,9 +133,9 @@ class ReadMessage implements Runnable {
                          inicio_mensagem = 0;
                     }
                     
-                    System.out.print((char) test);
+                System.out.print((char) test);
 
-                    if((char) test == '\n'){
+                if((char) test == '\n'){
                         inicio_mensagem = 1;
                     } 
             }
