@@ -1,4 +1,5 @@
-package statiotostation;
+package stationtostation;
+
 
 import java.util.*; /* Scanner; */
 import java.util.function.Consumer;
@@ -22,8 +23,6 @@ import javax.crypto.spec.*;
 
 
 public class Utilities {
-
-
 /**
 * Gets an encoded public key in byte[] and decodes it
 *

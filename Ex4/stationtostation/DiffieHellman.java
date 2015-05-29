@@ -1,8 +1,5 @@
 package stationtostation;
-/**
- *
- * @author Ana Paula Carvalho and Fábio Fernandes
- */
+
 
 import java.math.BigInteger;
 import java.lang.String;
@@ -63,10 +60,10 @@ public class DiffieHellman {
 
     }
 
-    public SecretKey sharedSecretKey(PublicKey pubk, String alg){
+    public byte[] sharedSecretKey(PublicKey pubk){
         try{
             ka.doPhase(pubk,true);
-            return ka.generateSecret(alg);
+            return ka.generateSecret();
         } catch (Exception e) {System.out.println(e);return null;}
 
     }

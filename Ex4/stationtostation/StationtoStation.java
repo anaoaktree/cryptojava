@@ -1,9 +1,5 @@
 package stationtostation;
 
-/**
- *
- * @author Ana Paula Carvalho and Fábio Fernandes
- */
 
 import java.security.*;
 import java.security.spec.*;
@@ -19,29 +15,53 @@ import javax.crypto.*;
 import javax.crypto.spec.DHParameterSpec;
 import sun.security.util.*;
 
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.interfaces.RSAPrivateKey;
+
+
+import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+
 
 
 public class StationtoStation{
     private Signature sig;
+    private KeyPair keypair;
+
     public StationtoStation(){
-        try{
-        this.sig=Signature.getInstance("SHA1withRSA");
+        try{this.sig=Signature.getInstance("SHA1withRSA");}
+        catch (Exception e) {System.out.println(e);}
     }
-    catch (Exception e) {System.out.println(e);}
+
+    public StationtoStation(String alg){
+        try{this.sig=Signature.getInstance(alg);}
+        catch (Exception e) {System.out.println(e);}
+    }
+
+    public KeyPair genRSAKeyPair() throws Exception{
+        KeyPairGenerator rsaKeyPairGen = KeyPairGenerator.getInstance("RSA");
+        rsaKeyPairGen.initialize(1024);
+        keypair = rsaKeyPairGen.generateKeyPair();
+        return keypair;
+    }
+
+    public KeyFactory genRSAKeyFact() throws Exception{
+        RSAPrivateCrtKey rsapriv = (RSAPrivateCrtKey)keypair.getPrivate();
+        RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(rsapriv.getModulus(), rsapriv.getPublicExponent());
+        return KeyFactory.getInstance("RSA");
+
     }
 
     /**
     *A party (A) signs with this function and sends it to another party (B) to verify
     ***/
-    public SealedObject sign(PrivateKey priv, byte[] mypub, byte[] otherpub, SecretKey secrKey){
+    public byte[] sign(PrivateKey priv, byte[] mypub, byte[] otherpub, Cipher initcipher){
         try{
-            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secrKey);
             sig.initSign(priv);
             // O par X,Y é assinado. Talvez sem calcular gx e gy explicitamente?
             sig.update(mypub);
             sig.update(otherpub);
-            new SealedObject(sig.sign(),cipher);
+            return initcipher.doFinal(sig.sign());
 
     	}catch (Exception err) {System.out.println("Error on sig sign: " + err);}
     	return null;

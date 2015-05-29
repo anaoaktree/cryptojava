@@ -20,16 +20,6 @@ import javax.crypto.*; /* CipherInputStream; Cipher; CipherOutputStream; KeyGene
 import javax.crypto.spec.*; /* SecretKeySpec; IvParameterSpec;  DHParameterSpec*/
 import javax.crypto.interfaces.*;
 
-import com.sun.crypto.provider.SunJCE;
-
-
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.security.interfaces.RSAPrivateKey;
-
-
-import java.security.spec.RSAPublicKeySpec;
-import java.security.spec.RSAPublicKeySpec;
-
 
 /**
  *
@@ -41,7 +31,6 @@ public class Server {
      * @param args the command line arguments
      * @throws java.io.IOException
      */
-    
 
     public static void main(String[] args) throws IOException {
 	   ServerSocket ss = new ServerSocket(4567);
@@ -68,17 +57,10 @@ class ReadMessage implements Runnable {
 	   this.client = client;
 	   this.id=id;
     }
-    public static PublicKey decodeX509(byte[] keyBytes){
-        try{
-        KeyFactory kf = KeyFactory.getInstance("DH");
-        X509EncodedKeySpec x509Spec = new X509EncodedKeySpec(keyBytes);
-        return kf.generatePublic(x509Spec);
-    } 
-    catch (Exception e) {System.out.println(e);return null;}
-
-    }
 
     public void run() {
+        Encryption encryption = new Encryption();
+        SupportedCiphers sup = new SupportedCiphers();
         Boolean firstTime=true;
     	String cipherMode="";
         try {
@@ -91,13 +73,11 @@ class ReadMessage implements Runnable {
             cipherMode = reader.readLine();  
             System.out.println("["+id+"]: Client connected with cipher "+cipherMode);       
             
+            Utilities ut=new Utilities();
             DiffieHellman dh= new DiffieHellman();
 
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             DataInputStream in = new DataInputStream(client.getInputStream());
-            //ObjectInputStream obin = new ObjectInputStream(client.getInputStream());
-            //ObjectOutputStream obout = new ObjectOutputStream(client.getOutputStream());
-            
             
             /**
             * Gets public key from client
@@ -108,7 +88,7 @@ class ReadMessage implements Runnable {
             in.readFully(pubClient);
 
             //decodes clients key
-            PublicKey clientPubKey = decodeX509(pubClient);
+            PublicKey clientPubKey = ut.decodeX509(pubClient);
 
             //creates his own dh pair with the same parameters as client
             dh.genParamsSpec(((DHPublicKey)clientPubKey).getParams());
@@ -125,98 +105,99 @@ class ReadMessage implements Runnable {
             *  adds the public key from the server and then generates the secret, which is returned.
             */
             System.out.println("Computing shared secret");
-            PrivateKey myPrivateKey=dh.getPrivateKey();
 
-            byte[] sharedSecret=dh.keyAgreement(myPrivateKey,clientPubKey);
+            byte[] sharedSecret=dh.keyAgreement(dh.getPrivateKey(),clientPubKey);
 
 
 //-----------------------------------------------------------
 
 
+            byte[] secrKey= Arrays.copyOfRange(sharedSecret, 0, 16);
+            byte[] macKey = Arrays.copyOfRange(sharedSecret, 16, sharedSecret.length);
+
+
+            //------------------MAC
+            Mac mac = encryption.digest(macKey,cipherMode);
+
+
+           //------------------MAC */
+
+
+
+// ----------------Encryption-----------
+            System.out.println("Preparing cipher");
+
+// ---------------- /Encryption-----------
+
+        Cipher enccipher = encryption.encrypt(cipherMode,secrKey);
+        Cipher deccipher = encryption.decrypt(cipherMode,secrKey);
+
+
+//---------------------- Signatures - STS -----------------
+            System.out.println("Signing...");
+
+            StationtoStation sts = new StationtoStation();
+            KeyPair kpair = sts.genRSAKeyPair();
+            byte[] rsaPub = kpair.getPublic().getEncoded();
+            //Sends pubkey and modulus to server
+
+          //  out.writeInt(rsapriv.getModulus().toByteArray().length);
+           // out.write(rsapriv.getModulus().toByteArray());
+
+           
+
+            //receives from client
+            byte[] rsaPubClient= new byte[in.readInt()];
+            in.readFully(rsaPubClient);
+
+            out.writeInt(rsaPub.length);
+            out.write(rsaPub);
+
+            //receives client signature
+            byte[] sigClient = new byte[in.readInt()];
+            in.readFully(sigClient);
+
+            byte[] encSig = sts.sign(kpair.getPrivate(),rsaPub,rsaPubClient,enccipher);
+            out.writeInt(encSig.length);
+            out.write(encSig);
+
             
-             /*
-         * Client encrypts, using DES in ECB mode
-         */
-            SecretKey secrKey = dh.sharedSecretKey(clientPubKey,"DES");
-            
+
+            System.out.println("Verifying received sigs");
+            //Decrypts and verifies client signature
+            byte[] decSig= deccipher.doFinal(sigClient);
+
+            Boolean verif = sts.verify(decSig,kpair.getPublic(),rsaPubClient);
+            System.out.println("verified: " + verif);
+
+//---------------------- /Signatures - STS ----------------
+
+
             System.out.println("Cipher initiated");
 
 
-            //--------Signature----------------
-             //--------STS----------------
-            //receives from client
-         byte[] rsaMod = new byte[in.readInt()];
-         in.readFully(rsaMod);
-         //receives from server
-         byte[] rsaPubClient = new byte[in.readInt()];
-         in.readFully(rsaPubClient);
-            
-        //Generates RSA key pair
-        KeyPairGenerator rsaKeyPairGen = KeyPairGenerator.getInstance("RSA");
-        rsaKeyPairGen.initialize(1024);
-        KeyPair rsaKeyPair = rsaKeyPairGen.generateKeyPair();
-        RSAPrivateCrtKey rsapriv = (RSAPrivateCrtKey)rsaKeyPair.getPrivate();
-        RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(rsapriv.getModulus(), rsapriv.getPublicExponent());
-        KeyFactory kfact = KeyFactory.getInstance("RSA");
-        PublicKey rsaPubKey = kfact.generatePublic(publicKeySpec);
-        byte[] rsaPub = rsaPubKey.getEncoded();
-
-        //Sends pubkey to client
-
-        out.writeInt(rsaPub.length);
-        out.write(rsaPub);
-
-
-
-
-        StationtoStation sts = new StationtoStation();
-        SealedObject ciphsign = sts.sign(rsaKeyPair.getPrivate(),rsaPub,rsaPubClient,secrKey);
-
-        byte[] sigClient = new byte[in.readInt()];
-        in.readFully(sigClient);
-        //SealedObject sigClient= (SealedObject) obin.readObject();
-
-
-
-        System.out.println("Got SigClient ");
-
-
-
-
-        //enviar ao outro o sealed object
-        //iniciar uma cifra para decifrar a chave
-        // verificar a assinatura
-
-        //--------Signature----------------
-
-        //enviar ao outro o sealed object
-        //iniciar uma cifra para decifrar a chave
-        // verificar a assinatura
-
-
-        //------------------Sig
-            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, secrKey);
-
-
-            CipherInputStream cis = new CipherInputStream(this.client.getInputStream(),cipher);
+            CipherInputStream cis = new CipherInputStream(this.client.getInputStream(),deccipher);
             int test;
             int inicio_mensagem = 1;
-            System.out.println(cis.read());
 
             while((test=cis.read())!=-1){
+                byte[] msg = new byte[test];
+                cis.read(msg);
+                System.out.print("["+id+"]: " + new String(msg)+ "\n");
 
-               if(inicio_mensagem == 1){
-                         System.out.print("["+id+"]: ");
-                         inicio_mensagem = 0;
-                    }
-                    
-                    System.out.print((char) test);
+                byte[] digestServer = mac.doFinal(msg);
+                int digestSize = cis.read();
+                byte[] digestClient = new byte[digestSize];
+                cis.read(digestClient);
 
-                    if((char) test == '\n'){
-                        inicio_mensagem = 1;
-                    } 
+                 if (!java.util.Arrays.equals(digestServer, digestClient))
+                    throw new Exception("Digest differ");
+
             }
+
+
+                 
+            
             System.out.println("["+id+"]: "+"Client disconnected");
     	} catch (Exception e) {System.out.println(e);}
     }
