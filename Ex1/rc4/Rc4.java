@@ -21,11 +21,15 @@ import javax.crypto.*;
 
 
 public class Rc4 {
+    /**
+    * Generates a key
+    **/
 	public static void genkey(String kpath) throws IOException{
 		try{
 		System.out.println("** Generating key for RC4...");
 		Path kp = Paths.get(kpath);
 		KeyGenerator kg = KeyGenerator.getInstance("RC4");
+        //key size has to be 128!
 		kg.init(128);
 		SecretKey key = kg.generateKey();
 		System.out.println("** Writing key to "+kpath+"...");
