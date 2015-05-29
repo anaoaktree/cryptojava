@@ -118,23 +118,27 @@ public class Client {
             System.out.println("Signing...");
 
             StationtoStation sts = new StationtoStation();
-            KeyPair kpair = sts.genRSAKeyPair();
+            KeyPair kpair=sts.genRSAKeyPair();
+            
             byte[] rsaPub = kpair.getPublic().getEncoded();
             //Sends pubkey and modulus to server
 
-          //  out.writeInt(rsapriv.getModulus().toByteArray().length);
-           // out.write(rsapriv.getModulus().toByteArray());
+           // out.writeInt(rsapriv.getModulus().toByteArray().length);
+            //out.write(rsapriv.getModulus().toByteArray());
 
-            out.writeInt(rsaPub.length);
-            out.write(rsaPub);
+            //out.writeInt(rsaPub.length);
+            //out.write(rsaPub);
 
             //receives from server
-            byte[] rsaPubServer = new byte[in.readInt()];
-            in.readFully(rsaPubServer);
+            //byte[] rsaPubServer = new byte[in.readInt()];
+            //n.readFully(rsaPubServer);
 
-            byte[] encSig = sts.sign(kpair.getPrivate(),rsaPub,rsaPubServer,enccipher);
+            //signs and sends to server
+            byte[] encSig = sts.sign(kpair.getPrivate(),pubSelf,pubServer,enccipher);
             out.writeInt(encSig.length);
             out.write(encSig);
+            System.out.println("Signing...");
+
 
             //receives server signature
             byte[] sigServer = new byte[in.readInt()];
@@ -145,7 +149,7 @@ public class Client {
             //Decrypts and verifies server sig
             byte[] decSig= deccipher.doFinal(sigServer);
 
-            Boolean verif = sts.verify(decSig,kpair.getPublic(),rsaPubServer);
+            Boolean verif = sts.verify(decSig,kpair.getPublic(),pubServer);
             System.out.println("verified: " + verif);
 
 //---------------------- /Signatures - STS ----------------

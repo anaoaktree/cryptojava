@@ -137,8 +137,9 @@ class ReadMessage implements Runnable {
             System.out.println("Signing...");
 
             StationtoStation sts = new StationtoStation();
-            KeyPair kpair = sts.genRSAKeyPair();
+            KeyPair kpair=sts.genRSAKeyPair();
             byte[] rsaPub = kpair.getPublic().getEncoded();
+            //Sends pubkey and modulus to server
             //Sends pubkey and modulus to server
 
           //  out.writeInt(rsapriv.getModulus().toByteArray().length);
@@ -147,17 +148,17 @@ class ReadMessage implements Runnable {
            
 
             //receives from client
-            byte[] rsaPubClient= new byte[in.readInt()];
-            in.readFully(rsaPubClient);
+            //byte[] rsaPubClient= new byte[in.readInt()];
+            //in.readFully(rsaPubClient);
 
-            out.writeInt(rsaPub.length);
-            out.write(rsaPub);
+            //out.writeInt(rsaPub.length);
+            //out.write(rsaPub);
 
             //receives client signature
             byte[] sigClient = new byte[in.readInt()];
             in.readFully(sigClient);
 
-            byte[] encSig = sts.sign(kpair.getPrivate(),rsaPub,rsaPubClient,enccipher);
+            byte[] encSig = sts.sign(kpair.getPrivate(),pubSelf,pubClient,enccipher);
             out.writeInt(encSig.length);
             out.write(encSig);
 
@@ -167,7 +168,7 @@ class ReadMessage implements Runnable {
             //Decrypts and verifies client signature
             byte[] decSig= deccipher.doFinal(sigClient);
 
-            Boolean verif = sts.verify(decSig,kpair.getPublic(),rsaPubClient);
+            Boolean verif = sts.verify(decSig,kpair.getPublic(),pubClient);
             System.out.println("verified: " + verif);
 
 //---------------------- /Signatures - STS ----------------

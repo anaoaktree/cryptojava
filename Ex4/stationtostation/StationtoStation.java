@@ -27,6 +27,7 @@ import java.security.spec.RSAPublicKeySpec;
 public class StationtoStation{
     private Signature sig;
     private KeyPair keypair;
+    public PublicKey pubKey;
 
     public StationtoStation(){
         try{this.sig=Signature.getInstance("SHA1withRSA");}
